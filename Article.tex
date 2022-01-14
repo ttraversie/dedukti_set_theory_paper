@@ -27,7 +27,7 @@
 \maketitle
 
 \begin{abstract}
-We show how to implement a version of set theory in \dedukti ~in such a way that it respects normalization. To do so, we adapt in $\lambda \Pi$\textit{--calculus modulo theory} the guideline given in \textit{Deduction modulo theory} by G. Dowek and A. Miquel --using a theory of pointed graphs-- and we \textit{formally} write the proofs in \dedukti. To achieve this goal, we develop a language of formulas.
+We show how to implement a version of set theory in \dedukti. To do so, we adapt in $\lambda \Pi$\textit{--calculus modulo theory} the guideline given in \textit{Deduction modulo theory} by G. Dowek and A. Miquel --using a theory of pointed graphs-- and we \textit{formally} write the proofs in \dedukti. To achieve this goal, we develop a language of formulas.
 \end{abstract}
 
 \section{Introduction}
@@ -700,7 +700,9 @@ We have now encoded in \dedukti ~all the axioms of IZst set theory: the strong e
 
 \section{Conclusion}
 
-We have implemented in \dedukti ~a version of set theory -- IZst -- that respects normalization properties. IZst set theory correponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded set with a theory of pointed graphs -- IZmod. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
+We have implemented in \dedukti ~a version of set theory -- IZst -- that correponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded set with a structure of pointed graphs -- IZmod. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
+
+Historically, the encoding of sets by pointed graphs had been designed to enjoy the normalization property. Izmod expressed in \textit{Deduction modulo theory} does so, but the case of our implementation in \lpcm ~remains to be investigated.
 
 
 To define and prove the lemmas corresponding to the Comprehension axiom, we have developped a language of formulas, along with operators \textit{interpretation} and \textit{update}. In particular, the language of formulas allows us to prove that the Extensionality axiom derives from the Strong Extensionality axiom.
