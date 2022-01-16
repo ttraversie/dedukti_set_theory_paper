@@ -265,7 +265,7 @@ symbol j' : El node → El node;
 symbol I : El node → El prop;
 symbol J : El node → El prop;
 symbol ρ : El graph → El node;
-symbol ρ^ : El node → El graph;
+symbol ρ' : El node → El graph;
 symbol Succ : El node → El node;
 symbol Pred : El node → El node;
 symbol Null : El node → El prop;
@@ -277,7 +277,7 @@ symbol join : El graph → El graph;
 symbol pair : El graph → El graph → El graph;
 symbol powerset : El graph → El graph;
 symbol omega : El graph;
-symbol Cl : El graph → El graph;
+symbol closure : El graph → El graph;
 \end{lstlisting}
 
 \subsection{From \textit{Deduction modulo theory} to \lpcm}
@@ -310,7 +310,7 @@ rule (cr (cr $a $x) $y) ↪ cr $a $y;
 \begin{lstlisting}
 rule i' (i $x) ↪ $x;
 rule j' (j $x) ↪ $x;
-rule ρ^ (ρ $x) ↪ $x;
+rule ρ' (ρ $x) ↪ $x;
 rule I (i $x) ↪ ⊤;
 rule J (j $x) ↪ ⊤;
 rule I (j $x) ↪ ⊥;
@@ -376,20 +376,20 @@ rule eta omega $x $x' ↪
 	(`∃ y, `∃ y', ($x = i y) ∧ ($x' = i y') ∧ (y < y'))
     ∨ (`∃ y, ($x = i y) ∧ ($x' = o) ∧ Nat y);
 
-rule eta (Cl $a) $x $x' ↪ 
-	(`∃ y, `∃ y', (($x = i y) ∧ ($x' = i y') ∧ eta $a y y'))
+symbol closure : El graph → El graph;
+rule eta (closure $a) $x $x' ↪ (`∃ y, `∃ y', (($x = i y) ∧ ($x' = i y') ∧ eta $a y y'))
     ∨ (`∃ y, ($x = i y) 
         ∧ ($x' = o)
         ∧ (`∀ c : El (node arrow prop), 
                 ((`∀ z, eta $a z (root $a) ⇒ c z)
                 ∧ (`∀ z, `∀ z', (eta $a z z') ∧ (c z') ⇒ (c z)))
-            	⇒ c y));
+            ⇒ c y));
             
 rule root (join $a) ↪ o;
 rule root (pair $a $b) ↪ o;
 rule root (powerset $a) ↪ o;
 rule root omega ↪ o;
-rule root (Cl $a) ↪ o;
+rule root (closure $a) ↪ o;
 
 \end{lstlisting}
 
@@ -582,17 +582,16 @@ The second one is obtained by applying lemma 5 to $c$, $a$ and $b/x$. To apply l
 This proof is written in \dedukti ~thanks to the following code: 
 
 \begin{lstlisting}
-opaque symbol lemma30 : π(`∀ a, `∀ b, `∀ c, 
-	((a ∈ b) ∧ (a simeq c)) ⇒ (c ∈ b))
+opaque symbol lemma30 : π(`∀ a, `∀ b, `∀ c, ((a ∈ b) ∧ (a simeq c)) ⇒ (c ∈ b))
 ≔ begin
 assume a b c H;
-refine ExElim node _ (and_eg _ _ H) _ _;
+refine ex_e node _ (and_el _ _ H) _ _;
 assume x Hx;
-refine ExIntro node x _ _;
+refine ex_i node x _ _;
 refine and_i _ _ _ _
-{refine and_eg _ _ Hx}
+{refine and_el _ _ Hx}
 {refine lemma5 c a (cr b x) 
-	(and_i _ _ (lemma4 a c (and_ed _ _ H)) (and_ed _ _ Hx))}
+	(and_i _ _ (lemma4 a c (and_er _ _ H)) (and_er _ _ Hx))}
 end;
 \end{lstlisting}
 
@@ -682,14 +681,13 @@ Indeed, in the formula $$(orF~(andF~(eqF~zero~two)~(eqF~one~three))~(eqF~zero~on
 
 
 \begin{lstlisting}
-opaque symbol lemmaExt : Π (c d : Graph), π((`∀ x, (x ∈ c) ⇔ (x ∈ d)) ⇒ (c simeq d))
+opaque symbol lemmaExt : Π (c d : El graph), π((`∀ x, (x ∈ c) ⇔ (x ∈ d)) ⇒ (c simeq d))
 ≔ begin
 assume c d H;
 refine lemma41 zero one 
-		(orF (andF (eqF zero two) (eqF one three)) (eqF zero one)) 
-		c d 
-		(update (update (λ _, empty_set) two c) three d) 
-		(lemmaHypExt c d H);
+	(orF (andF (eqF zero two) (eqF one three)) (eqF zero one)) 
+	c d (update (update (λ _, empty_set) two c) three d) 
+	(lemmaHypExt c d H)
 end;
 \end{lstlisting}
 
@@ -702,7 +700,7 @@ We have now encoded in \dedukti ~all the axioms of IZst set theory: the strong e
 
 We have implemented in \dedukti ~a version of set theory -- IZst -- that correponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded set with a structure of pointed graphs -- IZmod. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
 
-Historically, the encoding of sets by pointed graphs had been designed to enjoy the normalization property. Izmod expressed in \textit{Deduction modulo theory} does so, but the case of our implementation in \lpcm ~remains to be investigated.
+Historically, the encoding of sets by pointed graphs had been designed to enjoy the normalization property. IZmod expressed in \textit{Deduction modulo theory} does so, but the case of our implementation in \lpcm ~remains to be investigated.
 
 
 To define and prove the lemmas corresponding to the Comprehension axiom, we have developped a language of formulas, along with operators \textit{interpretation} and \textit{update}. In particular, the language of formulas allows us to prove that the Extensionality axiom derives from the Strong Extensionality axiom.
