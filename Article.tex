@@ -15,7 +15,7 @@
 \usepackage{enumitem}
 \setitemize[1]{label=---}
 
-\title{\textbf{Dedukti: an implementation of set theory with pointed graphs} (titre provisoire)}
+\title{\textbf{Dedukti: an implementation of set theory with pointed graphs}}
 \date{}
 
 \input{macros.tex}
@@ -34,7 +34,7 @@ We show how to implement a version of set theory in \dedukti. To do so, we adapt
 
 Several prover are based on set theory, such as \textsc{Mizar}, \textsc{Atelier B} and \textsc{Isabelle/ZF}. The goal of this paper is to present an implementation of set theory in the logical framework \dedukti ~\cite{expressing} expressed in the \lpcm. We use here one of \dedukti's implementation, called \textsc{Lambdapi}. Our long term project is to use this implementation to enable interoperability between such provers based on set theory. 
 
-The first way to implement the set theory in \dedukti ~is to state each axiom in the framework. But such a method does not yield a cut-elimination theorem for the set theory. In particular, it does not enable to extract witnesses from a constructive existence proof. An alternative is to orient these axioms as rewriting rules. For instance, $$x \in \mathcal{P}(y) \Leftrightarrow x \subseteq y$$ is replaced with $$x \in \mathcal{P}(y) \lra x \subseteq y$$
+The first way to implement set theory in \dedukti ~is to state each axiom in the framework. But such a method does not yield a cut-elimination theorem for set theory. In particular, it does not enable to extract witnesses from a constructive existence proof. An alternative is to orient these axioms as rewriting rules. For instance, $$x \in \mathcal{P}(y) \Leftrightarrow x \subseteq y$$ is replaced with $$x \in \mathcal{P}(y) \lra x \subseteq y$$
 
 However, as pointed out by M. Crabbé \cite{crabbé}, such a formulation of set theory does not have a cut-elimination property. An other solution is to define sets as \textit{pointed graphs}. With such a formulation, we can prove a cut-elimination theorem: for every proof in natural deduction that contains cuts there exists a cut-free proof. Such a theory expressed in \textit{Dedution modulo theory} is presented in \cite{zermodulo} with pencil and paper proofs. The goal of this paper is to present an implementation of this theory.
 
@@ -105,7 +105,7 @@ In the IZmod theory, sets are reprented by pointed graphs. A pointed graph is a 
 
 We have represented several pointed graphs where the root is indicated by the filled circle. We see that the location of the root is important as it changes the set represented by the pointed graph. In the third graph, the node $b$ has no effect because the root is $c$. \\
 
-The operator $root$ gives the root of a pointed graph. $a/x$ replace the root of $a$ by $x$. $x~\eta_a~y$ means there is a edge in $a$ from $y$ to $x$. The notation $rel(x,y,r)$ means that the nodes $x$ and $y$ are related by the relation $r$. We have the following rewriting rules:
+The operator $root$ gives the root of a pointed graph. $a/x$ replace the root of $a$ by $x$. $x~\eta_a~y$ means there is a edge in $a$ from $y$ to $x$. We have the following rewriting rules:
 $$ x \ \eta_{a/z} \ y \longrightarrow x \ \eta_a \ y $$
 $$ root(a/x) \longrightarrow x $$
 $$ (a/x)/y \longrightarrow a/y $$
@@ -114,7 +114,7 @@ We see in the examples that some different pointed graphs can represent the same
 
 \begin{equation*}
 \begin{split}
-a \simeq b \lra~ &\ex~r~root(a)~root(b) \\
+a \simeq b \lra~\ex~r,~ &r~root(a)~root(b) \\
 &\conj \ \fa x \fa x'~\fa y~(x'~\eta_a~x~\conj~r~x~y~\imp~\ex~y'~(y'~\eta_b~y~\conj~r~x'~y')) \\
 &\conj \ \fa y \fa y'~\fa x~(y'~\eta_b~y~\conj~r~x~y~\imp~\ex~x'~(x'~\eta_a~x~\conj~r~x'~y')))
 \end{split}
@@ -698,7 +698,7 @@ We have now encoded in \dedukti ~all the axioms of IZst set theory: the strong e
 
 \section{Conclusion}
 
-We have implemented in \dedukti ~a version of set theory -- IZst -- that correponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded set with a structure of pointed graphs -- IZmod. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
+We have implemented in \dedukti ~a version of set theory -- IZst -- that correponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded set with a structure of pointed graphs of IZmod theory. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
 
 Historically, the encoding of sets by pointed graphs had been designed to enjoy the normalization property. IZmod expressed in \textit{Deduction modulo theory} does so, but the case of our implementation in \lpcm ~remains to be investigated.
 
@@ -713,32 +713,32 @@ The implementation of IZmod theory represents a significant corpus of formal pro
 \begin{center}
 \begin{tabular}{|c|c||c|c|}
 \hline Lemma & Number of lines in the proof & Lemma & Number of lines in the proof \\
-\hline 3 & ? & 29 & ? \\
-\hline 4 & ? & 30 & ? \\
-\hline 5 & ? & 31 & ? \\
-\hline 6 & ? & 32 & ? \\
-\hline 7 & ? & 33 & ? \\
-\hline 8 & ? & 34 & ? \\
-\hline 9 & ? & 35 & ? \\
-\hline 10 & ? & 36 & ? \\
-\hline 11 & ? & 37 & ? \\
-\hline 12 & ? & 38 & ? \\
-\hline 13 & ? & 39 & ? \\
-\hline 14 & ? & 40 & ? \\
-\hline 15 & ? & 41 & ? \\
-\hline 16 & ? & 42 & ? \\
-\hline 17 & ? & 43 & ? \\
-\hline 18 & ? & Weak extensionality & ? \\
-\hline 19 & ? & 44 & ? \\
-\hline 20 & ? & 45 & ? \\
-\hline 21 & ? & 46 & ? \\
-\hline 22 & ? & 47 & ? \\
-\hline 23 & ? & 48 & ? \\
-\hline 24 & ? & 49 & ? \\
-\hline 25 & ? & 50 & ? \\
-\hline 26 & ? & 51 & ? \\
-\hline 27 & ? & 52 & ? \\
-\hline 28 & ? & 53 & ? \\
+\hline 3 & 26 & 29 & 17 \\
+\hline 4 & 14 & 30 & 10 \\
+\hline 5 & 37 & 31 & 12 \\
+\hline 6 & 33 & 32 & 49 \\
+\hline 7 & 12 & 33 & 33 \\
+\hline 8 & 5 & 34 & 33 \\
+\hline 9 & 12 & 35 & 9 \\
+\hline 10 & 12 & 36 & 9 \\
+\hline 11 & 5 & 37 & 9 \\
+\hline 12 & 5 & 38 & 9 \\
+\hline 13 & 5 & 39 & 9 \\
+\hline 14 & 37 & 40 & 9 \\
+\hline 15 & 40 & 41 & 42 \\
+\hline 16 & 48 & Weak extensionality & 47 \\
+\hline 17 & 48 & 42 & 49 \\
+\hline 18 & 38 & 43 & 39 \\
+\hline 19 & 44 & 44 & 133 \\
+\hline 20 & 90 & 45 & 46 \\
+\hline 21 & 34 & 46 & 11 \\
+\hline 22 & 35 & 47 & 18 \\
+\hline 23 & 34 & 48 & 165 \\
+\hline 24 & 38 & 49 & 11 \\
+\hline 25 & 31 & 50 & 23 \\
+\hline 26 & 38 & 51 & 6 \\
+\hline 27 & 29 & 52 & 17 \\
+\hline 28 & 33 & 53 & 31 \\
 \hline
 \end{tabular}
 \end{center}
