@@ -1,29 +1,119 @@
-\documentclass[a4paper]{article}
+\documentclass[submission,copyright,creativecommons]{eptcs}
+\providecommand{\event}{LFMTP 2022} % Name of the event you are submitting to
+%\usepackage{breakurl}             % Not needed if you use pdflatex only.
+\usepackage{underscore}           % Only needed if you use pdflatex.
 
-\usepackage[top=3.5cm, bottom=3.5cm, left=3.5cm, right=3.5cm]{geometry}
-\usepackage{ae,lmodern}
-\usepackage[english]{babel}
+\title{Dedukti: an Implementation of Set Theory with Pointed Graphs}
+\author{Author
+\institute{Institute}
+\email{email}
+\and
+Author2
+\institute{Institute}
+\email{email2}
+}
+
+\def\titlerunning{Dedukti: an Implementation of Set Theory with Pointed Graphs}
+\def\authorrunning{Author's names}
+
+%% My packages
+
+\usepackage{tikz}
+\usepackage{url}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
-\usepackage{amsmath}
-\usepackage[dvipsnames]{xcolor}
-\usepackage{tikz}
-\usepackage[backend=biber,style=alphabetic]{biblatex}
-\usepackage{url}
-\usepackage{fancyvrb}
-\usepackage{enumitem}
-\setitemize[1]{label=---}
+%% Lambdapi code
 
-\title{\textbf{Dedukti: an implementation of set theory with pointed graphs}}
-\date{}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{xcolor}
+\definecolor{green}{RGB}{0,130,0}
+\definecolor{lightgrey}{RGB}{240,240,240}
 
-\input{macros.tex}
-\input{lambdapi.tex}
-\addbibresource{ref.bib}
+\lstdefinelanguage{Lambdapi}
+{
+  inputencoding=utf8,
+  extendedchars=true,
+  numbers=none,
+  numberstyle={},
+  tabsize=2,
+  basicstyle={\ttfamily\upshape\mdseries},
+  backgroundcolor=\color{lightgrey},
+  keywords={abort,admit,admitted,apply,as,assert,assertnot,associative,assume,begin,builtin,commutative,compute,constant,debug,end,fail,flag,focus,generalize,have,in,induction,inductive,infix,injective,left,let,notation,off,on,opaque,open,prefix,print,private,proofterm,protected,prover,prover_timeout,quantifier,refine,reflexivity,require,rewrite,right,rule,sequential,simplify,solve,symbol,symmetry,type,TYPE,unif_rule,verbose,why3,with},
+  sensitive=true,
+  keywordstyle=\color{blue},
+  morecomment=[l]{//},
+  commentstyle={\itshape\color{red}},
+  string=[b]{"},
+  stringstyle=\color{orange},
+  showstringspaces=false,
+  literate=
+  {↪}{$\hookrightarrow$}1
+  {→}{$\rightarrow$}1
+  {Π}{$\Pi$}1
+  {≔}{\quad $\coloneqq$}1
+  {𝔹}{$\mathbb{B}$}1
+  {𝕃}{$\mathbb{L}$}1
+  {ℕ}{$\mathbb{N}$}1
+  {α}{$\alpha$}1
+  {λ}{$\lambda$}1
+  {σ}{$\sigma$}1
+  {π}{$\pi$}1
+  {τ}{$\tau$}1
+  {ω}{$\omega$}1
+  {∧}{$\wedge$}1
+  {∨}{$\vee$}1
+  {≤}{$\le$}1
+  {≠}{$\neq$}1
+  {∉}{$\notin$}1
+  {×}{$\times$}1
+  {ρ}{$\rho$}1
+  {∈}{$\in$}1
+  {∀}{$\forall$}1
+  {∃}{$\exists$}1
+  {⇒}{$\Rightarrow$}1
+  {⇔}{$\Leftrightarrow$}1
+  {⊤}{$\top$}1
+  {⊥}{$\bot$}1
+}
+\lstset{language={Lambdapi}}
+
+%% Macro
+
+\def\Type{\mbox{\tt TYPE}}
+\def\Kind{\mbox{\tt KIND}}
+\def\ra{\rightarrow}
+\def\lra{\longrightarrow}
+\def\Set{\mbox{\it Set}}
+\def\bliota{{ind}}
+\def\El{{\mbox{\it El}}}
+\def\Prop{{\mbox{\it Prop}}}
+\def\imp{\mathbin{\Rightarrow}}
+\def\fa{{\forall}}
+\def\bltop{{\top}}
+\def\blbot{{\bot}}
+\DeclareMathOperator{\blneg}{{\neg}}
+\def\conj{\mathbin{\wedge}}
+\def\disj{\mathbin{\vee}}
+\def\ex{{\exists}}
+
+\newtheorem{theorem}{Theorem}[section]
+
+\newenvironment{proof}{\noindent {\em Proof.}}{\medskip}
+
+\newcommand{\dedukti}{\textsc{Dedukti}}
+\newcommand{\lpcm}{$\lambda \Pi\textit{-calculus modulo theory}$}
+
+\def\Graph{{\mbox{\it Graph}}}
+\def\Node{{\mbox{\it Node}}}
+\def\omicron{{\mbox{\it omicron}}}
+\def\arr{{\mbox{\it arrow}}}
+
+%%%%%%%%%%%%
 
 \begin{document}
-\thispagestyle{empty}
 \maketitle
 
 \begin{abstract}
@@ -36,17 +126,17 @@ Several prover are based on set theory, such as \textsc{Mizar}, \textsc{Atelier 
 
 The first way to implement set theory in \dedukti ~is to state each axiom in the framework. But such a method does not yield a cut-elimination theorem for set theory. In particular, it does not enable to extract witnesses from a constructive existence proof. An alternative is to orient these axioms as rewriting rules. For instance, $$x \in \mathcal{P}(y) \Leftrightarrow x \subseteq y$$ is replaced with $$x \in \mathcal{P}(y) \lra x \subseteq y$$
 
-However, as pointed out by M. Crabbé \cite{crabbé}, such a formulation of set theory does not have a cut-elimination property. An other solution is to define sets as \textit{pointed graphs}. With such a formulation, we can prove a cut-elimination theorem: for every proof in natural deduction that contains cuts there exists a cut-free proof. Such a theory expressed in \textit{Dedution modulo theory} is presented in \cite{zermodulo} with pencil and paper proofs. The goal of this paper is to present an implementation of this theory.
+However, as pointed out by M. Crabbé \cite{crabbe}, such a formulation of set theory does not have a cut-elimination property. An other solution is to define sets as \textit{pointed graphs}. With such a formulation, we can prove a cut-elimination theorem: for every proof in natural deduction that contains cuts there exists a cut-free proof. Such a theory expressed in \textit{Dedution modulo theory} is presented in \cite{zermodulo} with pencil and paper proofs. The goal of this paper is to present an implementation of this theory.
 
 In 2007, the \lpcm ~had not been defined and this is why the original theory was defined in \textit{Dedution modulo theory}. The first issue was to adapt the expression in \textit{Dedution modulo theory} to the expression in \lpcm. This led to simplify the original formulation as classes of nodes of pointed graphs and relations on nodes can be naturaly expressed in \dedukti ~while that required a specific sort and specific comprehension axiom in \textit{Dedution modulo theory}. This enabled to reduce the size of the signature from 31 symbols to 26.
 
 On the other hand, in the original formulation of the theory some lemmas were only valid for a specific subset of propositions. These lemmas were proved by induction over the structure of the propositions of this subset. Implementing these lemmas in \dedukti ~required to define a new inductive sort for the formulas of this subset and an intepretation of these formulas into the general type of  propositions, itself defined with rewriting rules. This development is the first, to our knowledge, to use such a reflexion principle defined with rewriting rules in \dedukti. The generality of this method still remains to be investigated.
 
-\section{The theory of pointed graphs}
+\section{The Theory of Pointed Graphs}
 
 The set theory with pointed graphs developped by G. Dowek and A. Miquel is called IZmod (Intuitionistic Zermelo set theory in \textit{Deduction modulo}). We give here an informal presentation of the ideas developped in \cite{zermodulo}.
 
-\subsection{Sets as pointed graphs}
+\subsection{Sets as Pointed Graphs}
 
 \label{informal}
 
@@ -168,7 +258,7 @@ $$I(o) \lra \bot$$
 
 The same method is applied to constructors $pair$, $powerset$, $etc$.
 
-\subsection{Set theories}
+\subsection{Set Theories}
 
 These pointed graphs permit to prove the axioms of a theory IZst that lies between Zermelo (Z) and Zermelo-Fraenkel (ZF). This theory does not contain the Replacement scheme but it contains two additional axioms: the Strong Extensionality axiom and the Transitive Closure axiom. \\
 
@@ -213,7 +303,7 @@ The IZmod theory is an extension of IZst set theory with an encoding of pointed 
 \end{figure}
 
 
-\section{The language of pointed graphs}
+\section{The Language of Pointed Graphs}
 
 \subsection{Sorts}
 
@@ -289,7 +379,7 @@ Thus the symbols $mem$ and $rel$ \cite[see][Table 2]{zermodulo} are not needed a
 The symbols $g_{x,y_1,...,y_n,P}$ and $g'_{x,x',y_1,...,y_n,P}$ had been created as specific constructors that allow to introduce in $mem$ a proposition $P$ by convert it into a class. These symbols are now not necessary in \dedukti ~since $mem$ is deleted. 
 
 
-\subsection{Rewriting rules}
+\subsection{Rewriting Rules}
 
 All the other rewriting rules \cite[see][Table 3]{zermodulo}, except the ones involving the symbol associated with the construction of sets by comprehension (noted $comp$), are easy to implement in \dedukti.
 
@@ -377,8 +467,9 @@ rule eta omega $x $x' ↪
     ∨ (`∃ y, ($x = i y) ∧ ($x' = o) ∧ Nat y);
 
 symbol closure : El graph → El graph;
-rule eta (closure $a) $x $x' ↪ (`∃ y, `∃ y', (($x = i y) ∧ ($x' = i y') ∧ eta $a y y'))
-    ∨ (`∃ y, ($x = i y) 
+rule eta (closure $a) $x $x' ↪ 
+	(`∃ y, `∃ y', (($x = i y) ∧ ($x' = i y') ∧ eta $a y y'))
+	∨ (`∃ y, ($x = i y) 
         ∧ ($x' = o)
         ∧ (`∀ c : El (node arrow prop), 
                 ((`∀ z, eta $a z (root $a) ⇒ c z)
@@ -396,7 +487,7 @@ rule root (closure $a) ↪ o;
 The pointed graph \texttt{omega} represents the set of Von Neumann ordinals \cite[see][Table 2]{zermodulo53}. Indeed, the informal presentation of the representation of sets by pointed graphs given in \ref{informal} corresponds to Von Neumann ordinals. The rewriting rule of \texttt{eta omega x x'} states that in \texttt{omega} the edges represents the order relation $<$ and that there is an edge from every natural number to the root of \texttt{omega}.
 
 
-\section{The language of formulas}
+\section{The Language of Formulas}
 
 A key point in the original formulation of the theory is that the $comp$ symbol enabling to construct a set in comprehension is used are only valid for a subset of formulas \cite[see][Table 5]{zermodulo}. The formulas need to have all of its quantifiers of sort $El~graph$ and can only use the language $\in$, $\simeq$ and the classic logical connectives. Taking this restriction into account was the main challenge of this implementation.
 
@@ -477,7 +568,7 @@ $$interpretation \ \sigma \ (exF \ x \ f) \ \lra \ \ex \ a, interpretation \ (up
 $$interpretation \ \sigma \ fF \lra \blbot$$
 $$interpretation \ \sigma \ tF \lra \bltop$$
 
-\subsection{Results concerning valuation}
+\subsection{Results concerning Valuation}
 
 Thanks to the introduction of $interpretation$, we can deduce five theorems. \\
 
@@ -515,7 +606,7 @@ $\fa \ f, \fa \ \sigma, \sigma', (interpretation \ \sigma \ f) \ \conj \ (\fa x,
 The fifth theorem is proved by induction over formulas. $\square$
 \end{proof}
 
-\subsection{Comprehension, empty set and inductive set}
+\subsection{Comprehension, Empty Set and Inductive Set}
 
 Henceforth, we are able to define in \dedukti
 $$comp : \El~graph \ra (\El \ nat \ \ra \ \El~graph) \  \ra \El \ formula \ra \ \El~graph$$
@@ -563,7 +654,7 @@ rule π (@= $s $x $y) ↪ Π (P : El $s → El prop), π(P $x) → π(P $y);
 
 All the other lemmas of IZmod except the ones where $comp$ is involved are proved using the blueprint in \cite[see][Proposition 1]{zermodulo53}. The complete proofs can be found in \url{https://github.com/ttraversie/zf/tree/main/theoriezf}.
 
-\subsection{An example of proof}
+\subsection{An Example of Proof}
 
 To show the way lemmas are proved in \dedukti ~we will take the example of lemma 30 and comment its proof. This lemma states that $$ a \in b \conj a \simeq c \imp c \in b $$
 
@@ -582,7 +673,8 @@ The second one is obtained by applying lemma 5 to $c$, $a$ and $b/x$. To apply l
 This proof is written in \dedukti ~thanks to the following code: 
 
 \begin{lstlisting}
-opaque symbol lemma30 : π(`∀ a, `∀ b, `∀ c, ((a ∈ b) ∧ (a simeq c)) ⇒ (c ∈ b))
+opaque symbol lemma30 : π(`∀ a, `∀ b, `∀ c, 
+	((a ∈ b) ∧ (a simeq c)) ⇒ (c ∈ b))
 ≔ begin
 assume a b c H;
 refine ex_e node _ (and_el _ _ H) _ _;
@@ -595,7 +687,7 @@ refine and_i _ _ _ _
 end;
 \end{lstlisting}
 
-\subsection{Lemmas involving formulas}
+\subsection{Lemmas involving Formulas}
 
 Now that the language of formulas have been designed along with the implementation of the $comp$ symbol, lemma 32 can be implemented.
 
@@ -605,9 +697,9 @@ We implement it thanks to the $interpretation$ symbol. The valuation $update~\si
 
 \begin{lstlisting}
 opaque symbol lemma32 : Π (z : El nat), Π (f : El formula), 
-π(`∀ a, `∀ b, (`∀ σ : (El nat → El graph),
-((interpretation (update σ z a) f) ∧ (a simeq b)) 
-⇒ (interpretation (update σ z b) f)))
+	π(`∀ a, `∀ b, (`∀ σ : (El nat → El graph),
+	((interpretation (update σ z a) f) ∧ (a simeq b)) 
+	⇒ (interpretation (update σ z b) f)))
 \end{lstlisting}
 
 The proof of this \texttt{opaque symbol} is done by induction over formulas: each case is proved easily, using the lemmas that have already been checked by \dedukti. \\
@@ -616,22 +708,22 @@ Lemma 41 is implemented similarly:
 
 \begin{lstlisting}
 opaque symbol lemma41 : Π (x y : El nat), Π (f : El formula), 
-Π (c d : El graph), π(`∀ σ : (El nat → El graph), 
-((interpretation (update (update σ x c) y d) f)
-∧ (`∀ a, `∀ a', `∀ b, 
-	((a' ∈ a) 
-	∧ (interpretation (update (update σ x a) y b) f)) 
-	⇒ (`∃ b', ((b' ∈ b) 
-		∧ (interpretation (update (update σ x a') y b') f))))
-∧ (`∀ b, `∀ b', `∀ a, 
-	((b' ∈ b) 
-	∧ (interpretation (update (update σ x a) y b) f)) 
-	⇒ (`∃ a', ((a' ∈ a) 
-		∧ (interpretation (update (update σ x a') y b') f))))) 
-⇒ (c simeq d))
+	Π (c d : El graph), π(`∀ σ : (El nat → El graph), 
+	((interpretation (update (update σ x c) y d) f)
+	∧ (`∀ a, `∀ a', `∀ b, 
+		((a' ∈ a) 
+		∧ (interpretation (update (update σ x a) y b) f)) 
+		⇒ (`∃ b', ((b' ∈ b) 
+			∧ (interpretation (update (update σ x a') y b') f))))
+	∧ (`∀ b, `∀ b', `∀ a, 
+		((b' ∈ b) 
+		∧ (interpretation (update (update σ x a) y b) f)) 
+		⇒ (`∃ a', ((a' ∈ a) 
+			∧ (interpretation (update (update σ x a') y b') f))))) 
+	⇒ (c simeq d))
 \end{lstlisting}
 
-\subsection{Weak extensionnality}
+\subsection{Weak Extensionnality}
 
 \label{extensionality}
 
@@ -655,16 +747,16 @@ We impelement this theorem in \dedukti:
 
 \begin{lstlisting}
 opaque symbol lemmaHypExt : Π (c d : Graph), 
-π((`∀ z, (z ∈ c) ⇔ (z ∈ d)) ⇒ 
-((((c simeq c) ∧ (d simeq d)) ∨ (c simeq d))
-∧ (`∀ a, `∀ a', `∀ b, 
-	((a' ∈ a) ∧ (((a simeq c) ∧ (b simeq d)) ∨ (a simeq b))) 
-	⇒ (`∃ b', ((b' ∈ b) 
-	∧ (((a' simeq c) ∧ (b' simeq d)) ∨ (a' simeq b')))))
-∧ (`∀ b, `∀ b', `∀ a, 
-	((b' ∈ b) ∧ (((a simeq c) ∧ (b simeq d)) ∨ (a simeq b)))
-	 ⇒ (`∃ a', ((a' ∈ a) 
-	 ∧ (((a' simeq c) ∧ (b' simeq d)) ∨ (a' simeq b')))))))
+	π((`∀ z, (z ∈ c) ⇔ (z ∈ d)) ⇒ 
+	((((c simeq c) ∧ (d simeq d)) ∨ (c simeq d))
+	∧ (`∀ a, `∀ a', `∀ b, 
+		((a' ∈ a) ∧ (((a simeq c) ∧ (b simeq d)) ∨ (a simeq b))) 
+		⇒ (`∃ b', ((b' ∈ b) 
+		∧ (((a' simeq c) ∧ (b' simeq d)) ∨ (a' simeq b')))))
+	∧ (`∀ b, `∀ b', `∀ a, 
+		((b' ∈ b) ∧ (((a simeq c) ∧ (b simeq d)) ∨ (a simeq b)))
+		 ⇒ (`∃ a', ((a' ∈ a) 
+	 	∧ (((a' simeq c) ∧ (b' simeq d)) ∨ (a' simeq b')))))))
 \end{lstlisting}
 
 To prove $weak \ extensionality$, we assume graphs $c$ and $d$, and $H$ the hypothesis $\fa~z, (z \in c) \Leftrightarrow (z \in d)$. Then we apply lemma41 to:
@@ -681,7 +773,8 @@ Indeed, in the formula $$(orF~(andF~(eqF~zero~two)~(eqF~one~three))~(eqF~zero~on
 
 
 \begin{lstlisting}
-opaque symbol lemmaExt : Π (c d : El graph), π((`∀ x, (x ∈ c) ⇔ (x ∈ d)) ⇒ (c simeq d))
+opaque symbol lemmaExt : Π (c d : El graph), 
+	π((`∀ x, (x ∈ c) ⇔ (x ∈ d)) ⇒ (c simeq d))
 ≔ begin
 assume c d H;
 refine lemma41 zero one 
@@ -691,14 +784,14 @@ refine lemma41 zero one
 end;
 \end{lstlisting}
 
-\subsection{The axioms of IZst theory}
+\subsection{The Axioms of IZst Theory}
 
 We have now encoded in \dedukti ~all the axioms of IZst set theory: the strong extensionality axiom corresponds to lemma 41, the axiom of the union is implemented by lemma 42, the pairing axiom corresponds to lemma 43, the axiom of the power set is encoded by lemma 44, the comprehension scheme is implemented by lemma 45, the axiom of infinity corresponds to lemma 51 and the transitive closure axiom is encoded by lemmas 52 and 53.
 
 
 \section{Conclusion}
 
-We have implemented in \dedukti ~a version of set theory -- IZst -- that correponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded set with a structure of pointed graphs of IZmod theory. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
+We have implemented in \dedukti ~a version of set theory -- IZst -- that corresponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded sets with a structure of pointed graphs of IZmod theory. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
 
 Historically, the encoding of sets by pointed graphs had been designed to enjoy the normalization property. IZmod expressed in \textit{Deduction modulo theory} does so, but the case of our implementation in \lpcm ~remains to be investigated.
 
@@ -743,6 +836,10 @@ The implementation of IZmod theory represents a significant corpus of formal pro
 \end{tabular}
 \end{center}
 
-\printbibliography
 
+
+
+%\nocite{*}
+\bibliographystyle{eptcs}
+\bibliography{biblio}
 \end{document}
