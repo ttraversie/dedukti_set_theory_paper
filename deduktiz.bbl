@@ -1,0 +1,61 @@
+\begin{thebibliography}{1}
+\providecommand{\bibitemdeclare}[2]{}
+\providecommand{\surnamestart}{}
+\providecommand{\surnameend}{}
+\providecommand{\urlprefix}{Available at }
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{\texttt{#2}}
+\providecommand{\urlalt}[2]{\href{#1}{#2}}
+\providecommand{\doi}[1]{doi:\urlalt{http://dx.doi.org/#1}{#1}}
+\providecommand{\eprint}[1]{arXiv:\urlalt{https://arxiv.org/abs/#1}{#1}}
+\providecommand{\bibinfo}[2]{#2}
+
+\bibitemdeclare{unpublished}{expressing}
+\bibitem{expressing}
+\bibinfo{author}{A.~\surnamestart Assaf\surnameend},
+  \bibinfo{author}{G.~\surnamestart Burel\surnameend},
+  \bibinfo{author}{R.~\surnamestart Cauderlier\surnameend},
+  \bibinfo{author}{D.~\surnamestart Delahaye\surnameend},
+  \bibinfo{author}{G.~\surnamestart Dowek\surnameend},
+  \bibinfo{author}{C.~\surnamestart Dubois\surnameend},
+  \bibinfo{author}{F.~\surnamestart Gilbert\surnameend},
+  \bibinfo{author}{P.~\surnamestart Halmagrand\surnameend},
+  \bibinfo{author}{O.~\surnamestart Hermant\surnameend} \&
+  \bibinfo{author}{R.~\surnamestart Saillard\surnameend}
+  (\bibinfo{year}{2016}): \emph{\bibinfo{title}{Dedukti: a Logical Framework
+  based on the $\lambda\Pi$-Calculus Modulo Theory}}.
+\newblock \bibinfo{note}{Manuscript}.
+
+\bibitemdeclare{article}{theoryU}
+\bibitem{theoryU}
+\bibinfo{author}{F.~\surnamestart Blanqui\surnameend},
+  \bibinfo{author}{G.~\surnamestart Dowek\surnameend},
+  \bibinfo{author}{E.~\surnamestart Grienenberger\surnameend},
+  \bibinfo{author}{G.~\surnamestart Hondet\surnameend} \&
+  \bibinfo{author}{F.~\surnamestart Thiré\surnameend} (\bibinfo{year}{2021}):
+  \emph{\bibinfo{title}{Some Axioms for Mathematics}}.
+\newblock {\sl \bibinfo{journal}{Formal Structures for Computation and
+  Deduction}}.
+
+\bibitemdeclare{unpublished}{crabbe}
+\bibitem{crabbe}
+\bibinfo{author}{M.~\surnamestart Crabbé\surnameend} (\bibinfo{year}{1974}):
+  \emph{\bibinfo{title}{Non-normalisation de la théorie de Zermelo}}.
+\newblock \bibinfo{note}{Manuscript}.
+
+\bibitemdeclare{unpublished}{zermodulo}
+\bibitem{zermodulo}
+\bibinfo{author}{G.~\surnamestart Dowek\surnameend} \&
+  \bibinfo{author}{A.~\surnamestart Miquel\surnameend} (\bibinfo{year}{2007}):
+  \emph{\bibinfo{title}{Cut elimination for Zermelo set theory}}.
+\newblock \bibinfo{note}{Manuscript}.
+
+\bibitemdeclare{unpublished}{zermodulo53}
+\bibitem{zermodulo53}
+\bibinfo{author}{G.~\surnamestart Dowek\surnameend} \&
+  \bibinfo{author}{A.~\surnamestart Miquel\surnameend} (\bibinfo{year}{2007}):
+  \emph{\bibinfo{title}{Cut elimination for Zermelo set theory: Proof of 53
+  easy lemmas}}.
+\newblock \bibinfo{note}{Manuscript}.
+
+\end{thebibliography}

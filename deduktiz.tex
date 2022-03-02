@@ -307,7 +307,7 @@ The IZmod theory is an extension of IZst set theory with an encoding of pointed 
 
 \subsection{Sorts}
 
-The langage of the theory IZmod uses four sorts \cite[see][Section 3.2]{zermodulo}. The first two are for
+The langage of the theory IZmod uses four sorts \cite[see Section 3.2]{zermodulo}. The first two are for
 the pointed graphs and for the nodes of the pointed graphs.  In
 \dedukti, we would need two universal quantifiers and two
 existential quantifiers, one for each sort.  We rather use another
@@ -334,7 +334,7 @@ $\El$, $prop$, and $\arr$ are part of the standard library of
 
 \subsection{Signature}
 
-The signature of IZmod contains 31 symbols \cite[see][Table 2]{zermodulo}. As we have replaced the
+The signature of IZmod contains 31 symbols \cite[see Table 2]{zermodulo}. As we have replaced the
 sorts for classes and relations with the \dedukti \ types
 $\El~node \ra \El~prop$ and $\El~node \ra \El~node \ra \El~prop$, we do not need specific predicate symbols to apply a class to a node or a relations to two. In the same way, we do not need comprehension axioms for classes and relations. 
 
@@ -374,14 +374,14 @@ symbol closure : El graph → El graph;
 
 Unlike the \textit{Dedution modulo theory}, the \lpcm ~allows quantification over propositions. \\
 
-Thus the symbols $mem$ and $rel$ \cite[see][Table 2]{zermodulo} are not needed anymore. Indeed, a class of nodes can simply be expressed as a term $P$ of type $El~n \ra El~prop$, and the fact that a node $x$ is an element of this class can be expressed as $P~x$ and not as $mem(x,P)$. In a similar way, the fact that two nodes $x$ and $y$ are related by a relation $r$ is expressed with $r~x~y$.
+Thus the symbols $mem$ and $rel$ \cite[see Table 2]{zermodulo} are not needed anymore. Indeed, a class of nodes can simply be expressed as a term $P$ of type $El~n \ra El~prop$, and the fact that a node $x$ is an element of this class can be expressed as $P~x$ and not as $mem(x,P)$. In a similar way, the fact that two nodes $x$ and $y$ are related by a relation $r$ is expressed with $r~x~y$.
 
 The symbols $g_{x,y_1,...,y_n,P}$ and $g'_{x,x',y_1,...,y_n,P}$ had been created as specific constructors that allow to introduce in $mem$ a proposition $P$ by convert it into a class. These symbols are now not necessary in \dedukti ~since $mem$ is deleted. 
 
 
 \subsection{Rewriting Rules}
 
-All the other rewriting rules \cite[see][Table 3]{zermodulo}, except the ones involving the symbol associated with the construction of sets by comprehension (noted $comp$), are easy to implement in \dedukti.
+All the other rewriting rules \cite[see Table 3]{zermodulo}, except the ones involving the symbol associated with the construction of sets by comprehension (noted $comp$), are easy to implement in \dedukti.
 
 \begin{center}
 \underline{\textbf{General}}
@@ -484,12 +484,12 @@ rule root (closure $a) ↪ o;
 
 \end{lstlisting}
 
-The pointed graph \texttt{omega} represents the set of Von Neumann ordinals \cite[see][Table 2]{zermodulo53}. Indeed, the informal presentation of the representation of sets by pointed graphs given in \ref{informal} corresponds to Von Neumann ordinals. The rewriting rule of \texttt{eta omega x x'} states that in \texttt{omega} the edges represents the order relation $<$ and that there is an edge from every natural number to the root of \texttt{omega}.
+The pointed graph \texttt{omega} represents the set of Von Neumann ordinals \cite[see Table 2]{zermodulo53}. Indeed, the informal presentation of the representation of sets by pointed graphs given in \ref{informal} corresponds to Von Neumann ordinals. The rewriting rule of \texttt{eta omega x x'} states that in \texttt{omega} the edges represents the order relation $<$ and that there is an edge from every natural number to the root of \texttt{omega}.
 
 
 \section{The Language of Formulas}
 
-A key point in the original formulation of the theory is that the $comp$ symbol enabling to construct a set in comprehension is used are only valid for a subset of formulas \cite[see][Table 5]{zermodulo}. The formulas need to have all of its quantifiers of sort $El~graph$ and can only use the language $\in$, $\simeq$ and the classic logical connectives. Taking this restriction into account was the main challenge of this implementation.
+A key point in the original formulation of the theory is that the $comp$ symbol enabling to construct a set in comprehension is used are only valid for a subset of formulas \cite[see Table 5]{zermodulo}. The formulas need to have all of its quantifiers of sort $El~graph$ and can only use the language $\in$, $\simeq$ and the classic logical connectives. Taking this restriction into account was the main challenge of this implementation.
 
 Thus we need to introduce a set to caraterize the validity domain of such lemmas.
 
@@ -621,7 +621,7 @@ rule eta (comp $a $σ $f) $x $x' ↪
 rule root (comp $a $σ $f) ↪ o;
 \end{lstlisting}
 
-When it comes to the symbol related to the Infinity section of \cite[see][Section 2.1]{zermodulo}, we implement $empty\_set$ of type $\El~graph$ and $Ind$ of type $\El~graph \ \ra \ \El~prop$.
+When it comes to the symbol related to the Infinity section of \cite[see Section 2.1]{zermodulo}, we implement $empty\_set$ of type $\El~graph$ and $Ind$ of type $\El~graph \ \ra \ \El~prop$.
 
 To define the empty set, we use $comp$ with the formula $fF$:
 \begin{lstlisting}
@@ -639,7 +639,7 @@ rule Ind $c ↪ (empty_set ∈ $c)
 
 \section{Lemmas}
 
-A first result on the original formulation of the theory was to prove that the axioms of IZst are theorems in IZmod. This required 53 lemmas that were \textit{informally} proved in \cite[see][Tables 4 and 5]{zermodulo} and that we proved \textit{formally} in this paper.
+A first result on the original formulation of the theory was to prove that the axioms of IZst are theorems in IZmod. This required 53 lemmas that were \textit{informally} proved in \cite[see Tables 4 and 5]{zermodulo} and that we proved \textit{formally} in this paper.
 
 Some of these proofs just follow the informal ones. Some others required the use of the type of formula and its embedding into propositions. 
 
@@ -652,7 +652,7 @@ notation = infix 4;
 rule π (@= $s $x $y) ↪ Π (P : El $s → El prop), π(P $x) → π(P $y);
 \end{lstlisting}
 
-All the other lemmas of IZmod except the ones where $comp$ is involved are proved using the blueprint in \cite[see][Proposition 1]{zermodulo53}. The complete proofs can be found in \url{https://github.com/ttraversie/zf/tree/main/theoriezf}.
+All the other lemmas of IZmod except the ones where $comp$ is involved are proved using the blueprint in \cite[see Proposition 1]{zermodulo53}. The complete proofs can be found in \url{https://github.com/ttraversie/zf/tree/main/theoriezf}.
 
 \subsection{An Example of Proof}
 
@@ -731,7 +731,7 @@ We notice in \cite{zermodulo53} the use of weak extensionality (simply called ex
 
 \textbf{Weak extensionality.} $\fa~c,\fa~d, (\fa~z, (z \in c \Leftrightarrow z \in d) \imp c \simeq d)$ \\
 
-We follow the blueprint given by G. Dowek and A. Miquel \cite[see][Proposition 1]{zermodulo} : we use the strong extensionality axiom where $R(x,y)$ is $(x \simeq c~\conj~y \simeq d)~\disj~x \simeq y$. \\
+We follow the blueprint given by G. Dowek and A. Miquel \cite[see Proposition 1]{zermodulo} : we use the strong extensionality axiom where $R(x,y)$ is $(x \simeq c~\conj~y \simeq d)~\disj~x \simeq y$. \\
 
 \begin{proof}
 We want to prove that $\fa~c,\fa~d, (\fa~z, (z \in c \Leftrightarrow z \in d) \imp c \simeq d)$. We assume that $\fa~z, (z \in c \Leftrightarrow z \in d)$. We want to apply strong extensionality to deduce $c \simeq d$. To do so, we need to prove the three terms of the hypothesis of strong extensionality.
