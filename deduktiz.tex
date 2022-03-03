@@ -575,7 +575,7 @@ Thanks to the introduction of $interpretation$, we can deduce five theorems. \\
 The first theorem is used to simplify the terms when updating a valuation.
 
 \begin{theorem}
-$\fa \sigma \fa x \fa y \fa z \fa a ~[(eqNP \ x \ y) \ \imp \ (((update1 \ \sigma \ x \ a) \ y \ z) \ \simeq \ a)] \ \conj \ [\blneg(eqNP \ x \ y) \ \imp \ (((update1 \ \sigma \ x \ a) \ y \ z) \ \simeq \ (\sigma \ z))]$
+$\fa \sigma \fa x \fa y \fa z \fa a ~((eqNP \ x \ y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ \simeq \ a) \ \conj \ (\blneg eqNP \ x \ y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ \simeq \ \sigma \ z))$
 \end{theorem}
 
 \begin{proof}
@@ -585,21 +585,21 @@ The first term of the conjonction is proved by simple recurrence over natural nu
 The second theorem conveys the idea that if two graphs are bisimilar then it is identical to update a valuation by either of theses two graphs.
 
 \begin{theorem}
-$\fa \sigma \fa x \fa a \fa b ~(a \ \simeq \ b) \ \imp \ [\fa y ~(update \ \sigma \ x \ a \ y) \ \simeq \ (update \ \sigma \ x \ b \ y)]$
+$\fa \sigma \fa x \fa a \fa b ~(a \ \simeq \ b \ \imp \ \fa y ~(update \ \sigma \ x \ a \ y \ \simeq \ update \ \sigma \ x \ b \ y))$
 \end{theorem}
 
 \begin{theorem}
-$\fa \sigma \fa x \fa y \fa a \fa b \fa c ~(a \ \simeq \ b) \ \imp \ (\fa z~ (update \ (update \ \sigma \ x \ a) \ y \ c \ z) \ \simeq \ (update \  (update \ \sigma \ x \ b) \ y \ c \ z))$
+$\fa \sigma \fa x \fa y \fa a \fa b \fa c ~(a \ \simeq \ b \ \imp \ \fa z~ (update \ (update \ \sigma \ x \ a) \ y \ c \ z \ \simeq \ update \  (update \ \sigma \ x \ b) \ y \ c \ z))$
 \end{theorem}
 
 The fourth theorem states that if two valuations are equal they keep being equal after an update.
 
 \begin{theorem}
-$\fa \sigma \fa \sigma' \fa x \fa c~ (\fa y~ \sigma \ y \ \simeq \ \sigma' \ y) \ \imp \ (\fa z~ (update \ \sigma \ x \ c \ z) \ \simeq \ (update \ \sigma' \ x \ c \ z))$
+$\fa \sigma \fa \sigma' \fa x \fa c~ ((\fa y~ (\sigma \ y \ \simeq \ \sigma' \ y)) \ \imp \ \fa z~ (update \ \sigma \ x \ c \ z \ \simeq \ update \ \sigma' \ x \ c \ z))$
 \end{theorem}
 
 \begin{theorem}
-$\fa f \fa \sigma \fa \sigma' ~(interpretation \ \sigma \ f) \ \conj \ (\fa x ~(\sigma \ x) \ \simeq \ (\sigma' \ x))) \ \imp \ (interpretation \ \sigma' \ f)$
+$\fa f \fa \sigma \fa \sigma' ~((interpretation \ \sigma \ f \ \conj \ \fa x ~(\sigma \ x \ \simeq \ \sigma' \ x)) \ \imp \ interpretation \ \sigma' \ f)$
 \end{theorem}
 
 \begin{proof}
