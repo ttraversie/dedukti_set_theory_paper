@@ -4,13 +4,19 @@
 \usepackage{underscore}           % Only needed if you use pdflatex.
 
 \title{Dedukti: an Implementation of Set Theory with Pointed Graphs}
-\author{Author
-\institute{Institute}
-\email{email}
+\author{Valentin Blot
+\institute{Inria, France\\
+LMF, ENS Paris-Saclay, France}
+\email{valentin.blot@inria.fr}
 \and
-Author2
-\institute{Institute}
-\email{email2}
+Gilles Dowek
+\institute{Inria, France\\
+LMF, ENS Paris-Saclay, France}
+\email{gilles.dowek@ens-paris-saclay.fr}
+\and
+Thomas Traversié
+\institute{CentraleSupélec, France}
+\email{thomas.traversie@inria.fr}
 }
 
 \def\titlerunning{Dedukti: an Implementation of Set Theory with Pointed Graphs}
@@ -762,7 +768,7 @@ opaque symbol lemmaHypExt : Π (c d : Graph),
 To prove $weak \ extensionality$, we assume graphs $c$ and $d$, and $H$ the hypothesis $\fa z~ (z \in c) \Leftrightarrow (z \in d)$. Then we apply lemma41 to:
 
 \begin{itemize}
-\item nats $zero$ and $one$
+\item natural numbers $zero$ and $one$
 \item the formula $(orF~(andF~(eqF~zero~two)~(eqF~one~three))~(eqF~zero~one))$
 \item graphs $c$ and $d$
 \item the valuation $(update~(update~(\lambda \_, empty\_set)~two~c)~three~d)$ 
