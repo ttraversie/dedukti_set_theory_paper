@@ -3,7 +3,7 @@
 %\usepackage{breakurl}             % Not needed if you use pdflatex only.
 \usepackage{underscore}           % Only needed if you use pdflatex.
 
-\title{Dedukti: an Implementation of Set Theory with Pointed Graphs}
+\title{An Implementation of Set Theory with Pointed Graphs in Dedukti}
 \author{Valentin Blot
 \institute{Inria, France\\
 LMF, ENS Paris-Saclay, France}
@@ -19,7 +19,7 @@ Thomas Traversié
 \email{thomas.traversie@inria.fr}
 }
 
-\def\titlerunning{Dedukti: an Implementation of Set Theory with Pointed Graphs}
+\def\titlerunning{An Implementation of Set Theory with Pointed Graphs in Dedukti}
 \def\authorrunning{V. Blot, G. Dowek, T. Traversié}
 
 %% My packages
@@ -123,7 +123,7 @@ Thomas Traversié
 \maketitle
 
 \begin{abstract}
-We show how to implement a version of set theory in \dedukti. To do so, we adapt in $\lambda \Pi$\textit{--calculus modulo theory} the guideline given in \textit{Deduction modulo theory} by G. Dowek and A. Miquel --using a theory of pointed graphs-- and we \textit{formally} write the proofs in \dedukti. To achieve this goal, we develop a language of formulas and we use a structural induction.
+\dedukti ~is a type-checker for the $\lambda \Pi$\textit{--calculus modulo theory}, a logical framework that allows the extension of conversion with user-defined rewrite rules. In this paper, we present the implementation of a version of Dowek-Miquel's intuitionistic set theory in \dedukti. To do so, we adapt this theory -- based on the concept of pointed graphs -- from \textit{Deduction modulo theory} to $\lambda \Pi$\textit{--calculus modulo theory}, and we \textit{formally} write the proofs in \dedukti. In particular, this implementation requires the definition of a deep embedding of a certain class of formulas, as well as its interpretation in the theory.
 \end{abstract}
 
 \section{Introduction}
