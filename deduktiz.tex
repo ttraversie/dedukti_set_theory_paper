@@ -144,13 +144,13 @@ The second contribution consists in the implementation of this new theory in \de
 
 \section{The Theory of Pointed Graphs}
 
-The set theory with pointed graphs developed by G. Dowek and A. Miquel is called IZmod (Intuitionistic Zermelo set theory in \textit{Deduction modulo}). We give here an informal presentation of the ideas developed in \cite{zermodulo}.
+The set theory with pointed graphs developed by Dowek and Miquel is called Intuitionistic Zermelo set theory in \textit{Deduction modulo} (IZmod). We give here an informal presentation of the ideas developed in \cite{zermodulo}.
 
 \subsection{Sets as Pointed Graphs}
 
 \label{informal}
 
-In the IZmod theory, sets are represented by pointed graphs. A pointed graph is a direct graph whose one of its node is identified as the root. 
+In the IZmod theory, sets are represented by pointed graphs, that is, direct graphs with a distinguished node: the root. We give here the representation of several sets as pointed graphs. The root is indicated by the filled circle. The location of the root is important as it changes the set represented by the pointed graph, distinct pointed graphs represent the same set. For example, in the third graph, the node $b$ is irrelevant since the root is $c$.
 
 \begin{figure}[h]
 \centering
@@ -203,14 +203,10 @@ In the IZmod theory, sets are represented by pointed graphs. A pointed graph is 
 \end{tikzpicture}
 \end{figure}
 
-We have represented several pointed graphs where the root is indicated by the filled circle. We see that the location of the root is important as it changes the set represented by the pointed graph. In the third graph, the node $b$ has no effect because the root is $c$. \\
+IZmod has a sort of pointed graphs and a sort of nodes. If $a$ is a pointed graph, $root(a)$ is the root of $a$, which is a node. If $x$ is a node of $a$, then $a/x$ denotes the pointed graph $a$ where the root has been replaced with $x$. If $y$ is also a node of $a$, $x~\eta_a~y$ is the proposition asserting that there is a edge in $a$ from $y$ to $x$. Following this interpretation, IZmod contains the following rewriting rules:
+$$ x \ \eta_{a/z} \ y \longrightarrow x \ \eta_a \ y \qquad\qquad root(a/x) \longrightarrow x \qquad\qquad (a/x)/y \longrightarrow a/y $$
 
-The operator $root$ gives the root of a pointed graph. $a/x$ replace the root of $a$ by $x$. $x~\eta_a~y$ means there is a edge in $a$ from $y$ to $x$. We have the following rewriting rules:
-$$ x \ \eta_{a/z} \ y \longrightarrow x \ \eta_a \ y $$
-$$ root(a/x) \longrightarrow x $$
-$$ (a/x)/y \longrightarrow a/y $$
-
-We see in the examples that some different pointed graphs can represent the same set. To characterized this, a notion of  bisimilarity, noted $\simeq$, is introduced between graphs with rewriting rule 
+As noted above, distinct pointed graphs can represent the same set. Two pointed graphs representing the same set are related through a notion of bisimilarity, denoted $\simeq$, and defined with the rewrite rule:
 
 \begin{equation*}
 \begin{split}
@@ -219,6 +215,8 @@ a \simeq b \lra~\ex r,~ &r~root(a)~root(b) \\
 &\conj \ \fa y \fa y'~\fa x~(y'~\eta_b~y~\conj~r~x~y~\imp~\ex x'~(x'~\eta_a~x~\conj~r~x'~y')))
 \end{split}
 \end{equation*}
+
+As an example, the following pointed graphs are bisimilar, hence they represent the same set:
 
 \begin{figure}[h]
 \centering
@@ -240,7 +238,7 @@ a \simeq b \lra~\ex r,~ &r~root(a)~root(b) \\
 \end{tikzpicture}
 \end{figure}
 
-In set theory, there only exists one sort: the sets. In the IZmod theory, there exists two sorts: the nodes and the pointed graphs. Therefore, there are in IZmod two constructions related to the inclusion of sets. We can take the example of $\emptyset \in \{\emptyset\}$. We can represents this inclusion in two ways, either with a relation between pointed graphs or with a relation between nodes within a same graph.
+In set theory, there only exists one sort: the sets. The IZmod theory has two sorts: nodes and pointed graphs, and two notions related to set membership: relations between pointed graphs and relations between nodes within the same graph. As an example, take $\emptyset \in \{\emptyset\}$:
 
 \begin{figure}[h]
 \centering
@@ -258,19 +256,18 @@ In set theory, there only exists one sort: the sets. In the IZmod theory, there 
 \end{tikzpicture}
 \end{figure}
 
-When in a graph we have an edge from $k$ to $\ell$, the set represented by the pointed graph with the root $\ell$ is an element of the set represented by the pointed graph with root $k$. But any pointed graph bisimilar with pointed graph with root $\ell$ also represents a set that is an element of the set represented with the pointed graph with root $k$. This leads to the definition of membership noted $\in$, with rewriting rule $a \in b \lra \ex x~(x~\eta_b~root(b)~\conj~a \simeq (b/x))$. \\
+Since there is an edge from $k$ to $\ell$, the set represented by the pointed graph with root $\ell$ is an element of the set represented by the pointed graph with root $k$. But any pointed graph bisimilar to the pointed graph with root $\ell$ also represents a set that is an element of the set represented by the pointed graph with root $k$. This leads to the definition of a membership relation $\in$ with the rewrite rule:
+$$a \in b \lra \ex x~(x~\eta_b~root(b)~\conj~a \simeq (b/x))$$
 
-The objective of the IZmod theory is to composed pointed graphs, for instance to \textit{join} pointed graphs. The root of the new pointed graph is $o$. To guarantee that $o$ is not a node of one of the original pointed graphs, an injective function $i$ is introduced, with $i'$ its left inverse and $I$ the predicate of its image. 
-
-$$i'(i(x)) \lra x$$
-$$I(x) \lra \top$$
-$$I(o) \lra \bot$$
-
-The same method is applied to constructors $pair$, $powerset$, $etc$.
+In order to define set constructions such as pairs or powersets, we need a way of \textit{joining} two existing graphs together, as well as a way of adding a new node to an existing graph. To this end, the IZmod theory has two disjoint injections $i$ and $j$ on nodes, and a symbol for some constant node $o$ that is not in the image of $i$ or $j$. There are also inverses $i'$ and $j'$ to $i$ and $j$, and predicates $I$ and $J$ on the images of $i$ and $j$:
+\begin{align*}
+i'(i(x)) &\lra x &\qquad\qquad I(i(x)) &\lra \top &\qquad\qquad I(j(x)) &\lra \bot &\qquad\qquad I(o) \lra \bot\\
+j'(j(x)) &\lra x &\qquad\qquad J(j(x)) &\lra \top &\qquad\qquad J(i(x)) &\lra \bot &\qquad\qquad J(o) \lra \bot
+\end{align*}
 
 \subsection{Set Theories}
 
-These pointed graphs permit to prove the axioms of a theory IZst that lies between Zermelo theory (Z) and Zermelo-Fraenkel theory (ZF). This theory does not contain the Replacement scheme but it contains two additional axioms: the Strong Extensionality axiom and the Transitive Closure axiom. \\
+The membership $\in$ and bisimilarity $\simeq$ relations define a set theory IZst that lies between Zermelo (Z) and Zermelo-Fraenkel (ZF). This theory does not include the Replacement scheme but it contains two additional axioms: Strong Extensionality and Transitive Closure:\\
 
 \textbf{Strong Extensionality axiom.} 
 \begin{equation*}
@@ -278,26 +275,24 @@ These pointed graphs permit to prove the axioms of a theory IZst that lies betwe
 \fa x_1...\fa x_n\fa a\fa b~ &(R(a, b) \\
 &\conj~\fa x\fa x'\fa y~(x' \in x \conj R(x, y) \imp \ex y'~(y' \in y \conj R(x', y'))) \\
 &\conj~\fa y\fa y'\fa x~(y' \in y \conj R(x, y) \imp \ex x'~(x' \in x \conj R(x', y'))) \\
-&\imp a = b) 
+&\imp a \simeq b) 
 \end{split}
 \end{equation*}
 
-where $R(a,b)$ is a formula of free variables $x_1, ..., x_n$. \\
-
-The hypothesis of the Strong Extensionality axiom imitates the structure of the rewriting rule of $\eta$. This can be explained with the following reasoning: in the Extensionality axiom, the hypothesis states that two sets have the same elements, so the hypothesis of the strong extensionality axiom copy the structure of one of the equivalent to the inclusion in IZmod --that is to say the constructor $\eta$. \\
+where $R(a,b)$ is a formula with free variables $x_1, ..., x_n$. Note that the hypothesis of the Strong Extensionality axiom mimics the structure of the rewrite rule for $\simeq$.
+%This can be explained with the following reasoning: in the Extensionality axiom, the hypothesis states that two sets have the same elements, so the hypothesis of the strong extensionality axiom copy the structure of one of the equivalent to the inclusion in IZmod --that is to say the constructor $\eta$.
+\\
 
 \textbf{Transitive Closure axiom.} $\fa a\ex e~(a \subseteq e \conj \fa x\fa y~(x \in y \conj y \in e \imp x \in e))$ \\
 
 The Transitive Closure axiom conveys the idea that every set is included in a transitive set. \\
 
-The Strong Extensionality axiom can be deduced from the Foundation axiom and the Transitive Closure axiom can be derived from the Replacement Scheme.
+Strong Extensionality can be deduced from Foundation and Transitive Closure can be derived from Replacement. Moreover, Strong Extensionality implies Extensionality\footnote{See Section \ref{extensionality}}. Therefore we have the following picture:
 
-The Strong Extensionality axiom implies the Extensionality axiom\footnote{See Section \ref{extensionality}}.
+%The IZmod theory is an extension of IZst set theory with an encoding of pointed graphs.
 
-The IZmod theory is an extension of IZst set theory with an encoding of pointed graphs.
 
-\begin{figure}[h]
-\centering
+\begin{center}
 \begin{tikzpicture}[>=stealth,yscale=1,xscale=1]  
 
 \draw[rounded corners=3pt] (0.5,0.5) rectangle (4,5);
@@ -309,9 +304,7 @@ The IZmod theory is an extension of IZst set theory with an encoding of pointed 
 \node(c) at (10,3)[text width=3cm,text centered] {\underline{\textbf{ZF}} \\ Foundation \\ Replacement};
 
 \end{tikzpicture}
-\caption{View of the different set theories}
-\end{figure}
-
+\end{center}
 
 \section{The Language of Pointed Graphs}
 
