@@ -136,7 +136,7 @@ Several theorem provers, such as \textsc{Mizar}, \textsc{Atelier B} and \textsc{
 
 Stating each axiom of set theory in \dedukti ~would lead to an implementation that does not satisfy a cut-elimination theorem. In particular, it would forbid extraction of witnesses from constructive existence proofs.
 
-An alternative option would be to orient these axioms as rewriting rules. For instance the powerset axiom $x \in \mathcal{P}(y) \Leftrightarrow x \subseteq y$ would be replaced with the rewrite rule $x \in \mathcal{P}(y) \lra x \subseteq y$. However, as pointed out by Crabbé~\cite{crabbe}, such a formulation of set theory does not satisfy a cut-elimination property either. Indeed, if for a given set $a$ we define the set $b\equiv\left\{x\in a\middle|x\in x\right\}$ then $b\in b$ would get rewritten to $b\in a\wedge b\in b$, leading to an infinite reduction.
+An alternative option would be to orient these axioms as rewriting rules. For instance the powerset axiom $x \in \mathcal{P}(y) \Leftrightarrow x \subseteq y$ would be replaced with the rewrite rule $x \in \mathcal{P}(y) \lra x \subseteq y$. However, as pointed out by Crabbé~\cite{crabbe}, such a formulation of set theory does not satisfy a cut-elimination property either. Indeed, if for a given set $a$ we define the set $b\equiv\{x\in a\,|\,x\in x\}$ then $b\in b$ would get rewritten to $b\in a\wedge b\in b$, leading to an infinite reduction.
 
 In the current paper, we represent sets as \textit{pointed graphs} \cite{pointed}. With such a formulation, we can prove a cut-elimination theorem: for every proof in natural deduction there exists a cut-free proof of the same statement. Such an encoding of set theory has been defined in the context of \textit{Deduction modulo theory}~\cite{zermodulo}, together with pencil and paper proofs. At that time, the \lpcm ~had not been defined yet, and the first contribution of the current paper is to adapt this encoding to the \lpcm. In particular, we avoid the original definition of classes of nodes by using the quantification on propositions permitted by \lpcm. This reduces the size of the signature from 31 to 26 symbols.
 
@@ -462,13 +462,11 @@ The pointed graph \texttt{omega} represents the set of Von Neumann ordinals \cit
 
 \section{The Language of Formulas}
 
-A key point in the original formulation of the theory is that the lemmas in which the $comp$ symbol --enabling to construct a set by comprehension-- is used are only valid for a subset of formulas \cite[see Table 5]{zermodulo}. The formulas need to have all of its quantifiers of sort $El~graph$ and can only use the language $\in$, $\simeq$ and the classic logical connectives. Taking this restriction into account was the main challenge of this implementation.
-
-Thus we need to introduce a set to characterize the validity domain of such lemmas.
+This section is devoted to the operator that builds sets by comprehension. Indeed, in IZmod, the only valid sets of the form $\{x\in a\,|\,P(x)\}$ are those for which $P$ does not contain elements specific to the implementation of sets as pointed graphs, that is, all quantifiers in $P$ must be on $graph$ and $P$ can only use symbols $\in$, $\simeq$ and the logical connectives \cite[see Table 5]{zermodulo}. Taking this restriction into account is the main challenge of our implementation. In order to achieve this goal, we define a datatype representing the class of formulas just described, as well as an interpretation of this datatype into $El~prop$.
 
 \subsection{Formulas}
 
-In order to achieve this goal, we define the constant $formula$ of type $\Set$ and the logical connectives related to this constant.
+We define the constant $formula$ of type $\Set$ and the operators for building elements of $El~formula$. Variables are represented as natural numbers and we do not need to handle $\alpha$-conversion as we do not need substitution.
 
 \begin{lstlisting}
 constant symbol formula : Set;
@@ -483,7 +481,7 @@ constant symbol fF : El formula;
 constant symbol tF : El formula;
 \end{lstlisting}
 
-Then we are able to define an induction over formulas, using the language $\in$, $\simeq$ and the classic logical connectives.
+We also define an induction principle over formulas:
 
 \begin{lstlisting}
 constant symbol recF : Π (P : El formula → Prop), 
@@ -501,88 +499,86 @@ constant symbol recF : Π (P : El formula → Prop),
 
 \subsection{Interpretation}
 
-The next step is to interpret an object of type $formula$ into $Prop$. We introduce the constant $interpretation$ which receives a valuation of type $\El \ nat \ \ra \ \El~graph$ and a formula of type $\El \ formula$ and return a $\El~prop$.
+In this section, we define the interpretation of the datatype of formulas into the type of propositions. Since formulas can contain variables (represented as natural numbers), the interpretation depends on a valuation from natural numbers to graphs. Hence we have:
 
 \begin{lstlisting}
 symbol interpretation : (El nat → El graph) → El formula → El prop;
 \end{lstlisting} 
 
-We need to have a tool to update a valuation when we assign a variable. To do so, we introduce the constant $update$ of type $(\El \ nat \ra \El~graph) \ra \El \ nat \ra \El~graph \ra (\El \ nat \ra \El~graph)$ which takes as arguments a valuation $\sigma$, a natural number $x$ and a graph $a$ and returns a new valuation $(update \ \sigma \ x \ a)$ that substitutes $x$ by $a$ and acts like $\sigma$ for the other natural numbers.
+The interpretation of quantifiers requires an operator for updating a valuation, taking as arguments the initial valuation, the variable that needs to be updated, and the new value of this variable:
 
-To write a rewriting rule upon $update$, we need to be able to check if we apply $(update \ \sigma \ x \ a)$ to $y = x$ (which is substituted by $a$) or to $y \neq x$ (which is substituted by $\sigma \ y$.
+\begin{lstlisting}
+symbol update : (El nat → El graph) → El nat → El graph
+                                         → (El nat → El graph)
+\end{lstlisting} 
 
-We define the symbol $update1$ of type $(\El \ nat \ \ra \ \El~graph) \ \ra \ \El \ nat \ \ra \ \El~graph \ \ra \ \El \ nat \ \ra \ (\El \ nat \ \ra \ \El~graph)$.
+The computation of $update~\sigma~x~a~y$ relies on a decision procedure for the equality on natural numbers: if $x=y$ then $update~\sigma~x~a~y$ is $a$, other wise it is $\sigma~y$. Rather than implementing such a decision procedure separately, we embed it in an auxiliary function:
 
-The technique we use to rewrite $(update \ \sigma \ x \ a) \ y $ is the following: 
+\begin{lstlisting}
+symbol update1 : (El nat → El graph) → El nat → El graph → El nat
+                                         → (El nat → El graph)
+\end{lstlisting} 
 
-\begin{itemize}
-\item We keep in memory $y$ in the new argument $z$ of $update1$
-$$(update \ \sigma \ x \ a) \ y \ \lra \ update1 \ \sigma \ x \ a \ y \ y$$
-\item We decrement $x$ and $y$ until one of them equals zero
-$$update1 \ \sigma \ (s \ x) \ a \ (s \ y) \ z \ \lra \ update1 \ \sigma \ x \ a \ y \ z$$
-\item If both are equal to zero, then $x$ and $y$ are equal and we return $a$. 
-$$ update1 \ \sigma \ zero \ a \ zero \ z \ \lra \ a$$
-If only one equals zero, then they are different and we return $\sigma \ z$.
-$$update1 \ \sigma \ zero \ a \ (s \ y) \ z \ \lra \ \sigma \ z$$
-$$update1 \ \sigma \ (s \ x) \ a \ zero \ z \ \lra \ \sigma \ z$$
-\end{itemize}
+$update~\sigma~x~a~y$ reduces to $update1~\sigma~x~a~y~y$, and $update1~\sigma~x~a~y~z$ reduces to $a$ if $x=y$, and $\sigma~z$ otherwise, by decreasing $x$ and $y$ until one (or both) becomes $zero$. The last argument to $update1$ is thus used for storing the variable at which $update~\sigma~x~a$ was initially called. The rewrite rules are as follows:
+
+\begin{lstlisting}
+rule update $σ $x $a $y ↪ update1 $σ $x $a $y $y;
+rule update1 $σ zero $a zero $z ↪ $a;
+rule update1 $σ zero $a (s $y) $z ↪ $σ $z;
+rule update1 $σ (s $x) $a zero $z ↪ $σ $z;
+rule update1 $σ (s $x) $a (s $y) $z ↪ update1 $σ $x $a $y $z;
+\end{lstlisting}
+
+We can prove that $update$ and $update1$ satisfy the intended properties:
+
+\begin{theorem}
+\begin{equation*}
+\begin{split}
+\fa \sigma \fa x \fa y \fa z \fa a ~((x = y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ = \ a) \ \conj \ (\blneg \ x = y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ = \ \sigma \ z))
+\\
+\fa \sigma \fa \sigma' \fa x \fa a \fa b~ (a \ \simeq \ b \ \imp \ (\fa y~ (\sigma \ y \ \simeq \ \sigma' \ y)) \ \imp \ \fa z~ (update \ \sigma \ x \ a \ z \ \simeq \ update \ \sigma' \ x \ b \ z))
+\end{split}
+\end{equation*}
+\end{theorem}
 
 Now we have all the tools to define the rewriting rules of the interpretation of formulas:
 
-$$interpretation \ \sigma \ (eqF \ x \ y) \lra (\sigma \ x) \ \simeq \ (\sigma \ y)$$
-$$interpretation \ \sigma \ (inF \ x \ y) \lra (\sigma \ x) \ \in \ (\sigma \ y)$$
-$$interpretation \ \sigma \ (andF \ f \ g) \lra (interpretation \ \sigma \ f) \conj (interpretation \ \sigma \ g)$$
-$$interpretation \ \sigma \ (orF \ f \ g) \lra (interpretation \ \sigma \ f) \disj  (interpretation \sigma \ g)$$
-$$interpretation \ \sigma \ (impF \ f \ g) \lra (interpretation \ \sigma \ f) \imp (interpretation \ \sigma \ g)$$
-$$interpretation \ \sigma \ (allF \ x \ f) \ \lra \ \fa a, interpretation \ (update \ \sigma \ x \ a) \ f$$
-$$interpretation \ \sigma \ (exF \ x \ f) \ \lra \ \ex a, interpretation \ (update \ \sigma \ x \ a) \ f$$
-$$interpretation \ \sigma \ fF \lra \blbot$$
-$$interpretation \ \sigma \ tF \lra \bltop$$
+\begin{lstlisting}
+rule interpretation $σ (eqF $x $y) ↪ ($σ $x) simeq ($σ $y);
+rule interpretation $σ (inF $x $y) ↪ ($σ $x) ∈ ($σ $y);
+rule interpretation $σ (andF $f $g)
+                ↪ (interpretation $σ $f) ∧ (interpretation $σ $g);
+rule interpretation $σ (orF $f $g)
+                ↪ (interpretation $σ $f) ∨ (interpretation $σ $g);
+rule interpretation $σ (impF $f $g)
+                ↪ (interpretation $σ $f) ⇒ (interpretation $σ $g);
+rule interpretation $σ (allF $x $f)
+                ↪ `∀ a, interpretation (update $σ $x a) $f;
+rule interpretation $σ (exF $x $f)
+                ↪ `∃ a, interpretation (update $σ $x a) $f;
+rule interpretation $σ fF ↪ ⊥;
+rule interpretation $σ tF ↪ ⊤;
+\end{lstlisting}
 
-\subsection{Results concerning Valuation}
-
-Thanks to the introduction of $interpretation$, we can deduce five theorems. \\
-
-The first theorem is used to simplify the terms when updating a valuation.
-
-\begin{theorem}
-$\fa \sigma \fa x \fa y \fa z \fa a ~((x = y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ \simeq \ a) \ \conj \ (\blneg \ x = y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ \simeq \ \sigma \ z))$
-\end{theorem}
-
-\begin{proof}
-The first term of the conjunction is proved by simple recurrence over natural numbers. The second term of the conjunction is proved by double recurrence. $\square$
-\end{proof}
-
-The second theorem conveys the idea that if two graphs are bisimilar then it is identical to update a valuation by either of theses two graphs.
-
-\begin{theorem}
-$\fa \sigma \fa x \fa a \fa b ~(a \ \simeq \ b \ \imp \ \fa y ~(update \ \sigma \ x \ a \ y \ \simeq \ update \ \sigma \ x \ b \ y))$
-\end{theorem}
-
-\begin{theorem}
-$\fa \sigma \fa x \fa y \fa a \fa b \fa c ~(a \ \simeq \ b \ \imp \ \fa z~ (update \ (update \ \sigma \ x \ a) \ y \ c \ z \ \simeq \ update \  (update \ \sigma \ x \ b) \ y \ c \ z))$
-\end{theorem}
-
-The fourth theorem states that if two valuations are equal they keep being equal after an update.
-
-\begin{theorem}
-$\fa \sigma \fa \sigma' \fa x \fa c~ ((\fa y~ (\sigma \ y \ \simeq \ \sigma' \ y)) \ \imp \ \fa z~ (update \ \sigma \ x \ c \ z \ \simeq \ update \ \sigma' \ x \ c \ z))$
-\end{theorem}
+We can finally prove that $interpretation$ is invariant under $\simeq$-equivalent valuations:
 
 \begin{theorem}
 $\fa f \fa \sigma \fa \sigma' ~((interpretation \ \sigma \ f \ \conj \ \fa x ~(\sigma \ x \ \simeq \ \sigma' \ x)) \ \imp \ interpretation \ \sigma' \ f)$
 \end{theorem}
-
 \begin{proof}
-The fifth theorem is proved by induction over formulas. $\square$
+By induction over formula f. $\square$
 \end{proof}
 
 \subsection{Comprehension, Empty Set and Inductive Set}
 
-Henceforth, we are able to define in \dedukti
-$$comp : \El~graph \ra (\El \ nat \ \ra \ \El~graph) \  \ra \El \ formula \ra \ \El~graph$$
+With this syntax for restricted formulas at hand together with the interpretation in $prop$, we are finally able to define the comprehension construction in \dedukti:
 
-and its rewriting rules
+\begin{lstlisting}
+symbol comp : El graph → (El nat → El graph) → El formula
+                                                       → El graph;
+\end{lstlisting}
+
+together with its rewrite rules
 
 \begin{lstlisting}
 rule eta (comp $a $σ $f) $x $x' ↪ 
@@ -594,19 +590,17 @@ rule root (comp $a $σ $f) ↪ o;
 
 When it comes to the symbol related to the Infinity section of \cite[see Section 2.1]{zermodulo}, we implement $empty\_set$ of type $\El~graph$ and $Ind$ of type $\El~graph \ \ra \ \El~prop$.
 
-To define the empty set, we use $comp$ with the formula $fF$:
+Using comprehension with the set of natural numbers and the formula $fF$ gives the empty set:
 \begin{lstlisting}
-rule empty_set ↪ comp omega (λ _, empty_set) fF;
-rule root empty_set ↪ o;
+rule empty_set ↪ comp omega (λ _, omega) fF;
 \end{lstlisting}
 
-Then we implement
+and we can define inductive sets:
 
 \begin{lstlisting}
 rule Ind $c ↪ (empty_set ∈ $c) 
 ∧ (`∀ a, (a ∈ $c) ⇒ ((join (pair a (pair a a))) ∈ $c));
 \end{lstlisting}
-
 
 \section{Lemmas}
 
