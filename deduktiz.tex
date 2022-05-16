@@ -138,7 +138,7 @@ Stating each axiom of set theory in \dedukti ~would lead to an implementation th
 
 An alternative option would be to orient these axioms as rewriting rules. For instance the powerset axiom $x \in \mathcal{P}(y) \Leftrightarrow x \subseteq y$ would be replaced with the rewrite rule $x \in \mathcal{P}(y) \lra x \subseteq y$. However, as pointed out by Crabbé~\cite{crabbe}, such a formulation of set theory does not satisfy a cut-elimination property either. Indeed, if for a given set $a$ we define the set $b\equiv\left\{x\in a\middle|x\in x\right\}$ then $b\in b$ would get rewritten to $b\in a\wedge b\in b$, leading to an infinite reduction.
 
-In the current paper, we represent sets as \textit{pointed graphs} \cite{pointed}. With such a formulation, we can prove a cut-elimination theorem: for every proof in natural deduction there exists a cut-free proof of the same statement. Such an encoding of set theory has been defined in the context of \textit{Deduction modulo theory}~\cite{zermodulo}, together with pencil and paper proofs. At that time, the \lpcm ~had not been defined yet, and the first contribution of the current paper is to adapt this encoding to the \lpcm. In particular, we avoid the original definition of classes of nodes by using quantification on propositions permitted by \lpcm. This reduces the size of the signature from 31 to 26 symbols.
+In the current paper, we represent sets as \textit{pointed graphs} \cite{pointed}. With such a formulation, we can prove a cut-elimination theorem: for every proof in natural deduction there exists a cut-free proof of the same statement. Such an encoding of set theory has been defined in the context of \textit{Deduction modulo theory}~\cite{zermodulo}, together with pencil and paper proofs. At that time, the \lpcm ~had not been defined yet, and the first contribution of the current paper is to adapt this encoding to the \lpcm. In particular, we avoid the original definition of classes of nodes by using the quantification on propositions permitted by \lpcm. This reduces the size of the signature from 31 to 26 symbols.
 
 The second contribution consists in the implementation of this new theory in \dedukti. In the original formulation of the theory some lemmas are only valid for a specific class of formulas, as their proofs proceed by induction on the structure of these formulas. Implementing these lemmas in \dedukti ~requires the definition of an inductive sort of formulas together with an interpretation of these formulas into the general type of propositions. This interpretation is defined with rewriting rules. The current development is the first, to our knowledge, to use such a reflection principle defined with rewriting rules in \dedukti. The generality of this method still remains to be investigated.
 
@@ -310,96 +310,71 @@ Strong Extensionality can be deduced from Foundation and Transitive Closure can 
 
 \subsection{Sorts}
 
-The language of the theory IZmod uses four sorts \cite[see Section 3.2]{zermodulo}. The first two are for
-the pointed graphs and for the nodes of the pointed graphs.  In
-\dedukti, we would need two universal quantifiers and two
-existential quantifiers, one for each sort.  We rather use another
-solution \cite{theoryU} that is to declare a constant $\Set$ of type
-$\Type$ for codes of sorts, a function $\El$ of type $\Set \ra \Type$,
-two constants $graph$ and $node$ of sort $\Set$.
-
+There are four sorts in IZmod \cite[see Section 3.2]{zermodulo}: graphs, nodes, classes of nodes and binary relations between nodes. We implemented the first two via the standard technique~\cite{theoryU} of defining a universe $\Set:\Type$ of sorts, a function $\El$ of type $\Set \ra \Type$ and two constants $graph$ and $node$ of type $\Set$:
 \begin{lstlisting}
 constant symbol graph : Set;
 constant symbol node : Set;
 \end{lstlisting}
+We also introduce a constant $\arr $ of type $\Set \ra \Set \ra \Set$, together with its associated rewrite rule $\El~(x~\arr~y) \lra (\El~x) \ra (\El~y)$.
 
-The two other sorts of the theory IZmod are for classes of nodes and
-for binary relations on nodes.  In \dedukti, the sort of classes is
-just $\El~node \ra \El~prop$ and that of binary relations
-$\El~node \ra \El~node \ra \El~prop$. To quantify on such sorts, we introduce constant $\arr $ of type
-$\Set \ra \Set \ra \Set$ and rewrite rule
-$$\El~(x~\arr~y) \lra (\El~x) \ra (\El~y)$$
+Contrary to deduction modulo, classes of nodes and binary relations on nodes can be expressed primitively via quantifications on propositions in \lpcm. The sort of classes is defined in \dedukti ~as $\El~node \ra \El~prop$ and that of binary relations as $\El~node \ra \El~node \ra \El~prop$.
 
-The symbols $graph$ and $node$ are specific to the
-expression of IZmod in \dedukti. In contrast the symbols $\Set$,
-$\El$, $prop$, and $\arr$ are part of the standard library of 
-\dedukti.
+The symbols $graph$ and $node$ are specific to the expression of IZmod in \dedukti, while in contrast the symbols $\Set$, $\El$ and $prop$ are part of the standard library of \dedukti.
 
 \subsection{Signature}
 
-The signature of IZmod contains 31 symbols \cite[see Table 2]{zermodulo}. As we have replaced the
-sorts for classes and relations with the \dedukti \ types
-$\El~node \ra \El~prop$ and $\El~node \ra \El~node \ra \El~prop$, we do not need specific predicate symbols to apply a class to a node or a relations to two. In the same way, we do not need comprehension axioms for classes and relations. 
-
-Similarly, the equality symbol is part of the standard library of \dedukti.
-
-The signature is thus reduced to 26 symbols. The specific case of the comprehension symbol is treated later.
+The signature of IZmod contains 31 symbols \cite[see Table 2]{zermodulo}. As we have replaced the sorts for classes and relations with primitive \dedukti ~types, we do not need specific predicate symbols $mem$ and $rel$ to apply a class to a node or a relations to two. By virtue of the encoding of classes of nodes as elements of $\El~node \ra \El~prop$, $mem(x,P)$ can simply be expressed as $P~x$, and similarly $rel(x,y,r)$ can simply be expressed as $r~x~y$. In the same way, we do not need symbols $g_{x,y_1,...,y_n,P}$ and $g'_{x,x',y_1,...,y_n,P}$ to build classes and relations. Finally, the equality symbol is part of the standard library of \dedukti. The signature is thus reduced to 26 symbols. Below are the first 25 symbols, the specific case of the comprehension symbol is treated later.
 
 \begin{lstlisting}
 symbol eta : El graph → El node → El node → El prop;
 symbol root : El graph → El node;
-symbol cr : El graph → El node → El graph;
+symbol cr : El graph → El node → El graph; // change of root
+
 constant symbol o : El node;
-constant symbol O : El node;
 symbol i : El node → El node;
 symbol i' : El node → El node;
 symbol j : El node → El node;
 symbol j' : El node → El node;
 symbol I : El node → El prop;
 symbol J : El node → El prop;
+
+// injection from graphs to nodes (for powerset) and its inverse
 symbol ρ : El graph → El node;
 symbol ρ' : El node → El graph;
+
+// natural numbers
+constant symbol O : El node;
 symbol Succ : El node → El node;
 symbol Pred : El node → El node;
 symbol Null : El node → El prop;
 symbol Nat : El node → El prop;
 symbol < : El node → El node → El prop;
-symbol simeq : El graph → El graph → El prop;
+
+symbol simeq : El graph → El graph → El prop; // bisimilarity
 symbol ∈ : El graph → El graph → El prop;
 symbol join : El graph → El graph;
 symbol pair : El graph → El graph → El graph;
 symbol powerset : El graph → El graph;
-symbol omega : El graph;
+symbol omega : El graph; // set of natural numbers
 symbol closure : El graph → El graph;
 \end{lstlisting}
 
-\subsection{From \textit{Deduction modulo theory} to \lpcm}
-
-Unlike \textit{Deduction modulo theory}, \lpcm ~allows quantification over propositions. \\
-
-Thus the symbols $mem$ and $rel$ \cite[see Table 2]{zermodulo} are not needed anymore. Indeed, a class of nodes can simply be expressed as a term $P$ of type $El~node \ra El~prop$, and the fact that a node $x$ is an element of this class can be expressed as $P~x$ and not as $mem(x,P)$. In a similar way, the fact that two nodes $x$ and $y$ are related by a relation $r$ is now simply expressed with $r~x~y$.
-
-The symbols $g_{x,y_1,...,y_n,P}$ and $g'_{x,x',y_1,...,y_n,P}$ had been created as specific constructors that allow to introduce in $mem$ a proposition $P$ by convert it into a class. These symbols are now not necessary in \dedukti ~since $mem$ is deleted. 
-
-
 \subsection{Rewriting Rules}
 
-All the other rewriting rules \cite[see Table 3]{zermodulo}, except the ones involving the symbol associated with the construction of sets by comprehension (noted $comp$), are easy to implement in \dedukti.
-
+Among the rewrite rules \cite[see Table 3]{zermodulo}, we can drop the compatibility of equality with $mem$ as it comes for free with the Leibniz equality of \dedukti's standard library. We can also drop the rewrite rules determining the behavior of $g_{x,y_1,...,y_n,P}$ and $g'_{x,x',y_1,...,y_n,P}$, as they are superseeded by our encoding of classes and binary relations. The remaining rewrite rules are easy to implement in \dedukti:
+\filbreak
 \begin{center}
 \underline{\textbf{General}}
 \end{center}
-
 \begin{lstlisting}
 rule eta (cr $a $z) $x $y ↪ eta $a $x $y;
 rule root (cr $a $x) ↪ $x;
 rule (cr (cr $a $x) $y) ↪ cr $a $y;
 \end{lstlisting}
-
+\filbreak
 \begin{center}
 \underline{\textbf{Relocations}}
 \end{center}
-
 \begin{lstlisting}
 rule i' (i $x) ↪ $x;
 rule j' (j $x) ↪ $x;
@@ -420,11 +395,10 @@ rule Nat (Succ $x) ↪ Nat $x;
 rule $x < O ↪ ⊥;
 rule $x < (Succ $y) ↪ ($x < $y) ∨ ($x = $y);
 \end{lstlisting}
-
+\filbreak
 \begin{center}
 \underline{\textbf{Equality and Membership}}
 \end{center}
-
 \begin{lstlisting}
 rule $a simeq $b ↪ `∃ r : El (node arrow (node arrow prop)), 
     r (root $a) (root $b)
@@ -437,11 +411,10 @@ rule $a simeq $b ↪ `∃ r : El (node arrow (node arrow prop)),
 
 rule $a ∈ $b ↪ `∃ x, ((eta $b x (root $b)) ∧ ($a simeq cr $b x));
 \end{lstlisting}
-
+\filbreak
 \begin{center}
 \underline{\textbf{Constructions}}
 \end{center}
-
 \begin{lstlisting}
 rule eta (join $a) $x $x' ↪ 
 	(`∃ y, `∃ y', ($x = i y) ∧ ($x' = i y') ∧ eta $a y y')
@@ -464,12 +437,10 @@ rule eta (powerset $a) $x $x' ↪
     	∧ ((cr $a y) ∈ c))
     ∨ (`∃ c, ($x = j (ρ c)) ∧ ($x' = o));
 
-symbol omega : El graph;
 rule eta omega $x $x' ↪ 
 	(`∃ y, `∃ y', ($x = i y) ∧ ($x' = i y') ∧ (y < y'))
     ∨ (`∃ y, ($x = i y) ∧ ($x' = o) ∧ Nat y);
 
-symbol closure : El graph → El graph;
 rule eta (closure $a) $x $x' ↪ 
 	(`∃ y, `∃ y', (($x = i y) ∧ ($x' = i y') ∧ eta $a y y'))
 	∨ (`∃ y, ($x = i y) 
@@ -484,10 +455,9 @@ rule root (pair $a $b) ↪ o;
 rule root (powerset $a) ↪ o;
 rule root omega ↪ o;
 rule root (closure $a) ↪ o;
-
 \end{lstlisting}
 
-The pointed graph \texttt{omega} represents the set of Von Neumann ordinals \cite[see Table 2]{zermodulo53}. Indeed, the informal presentation of the representation of sets by pointed graphs given in \ref{informal} corresponds to Von Neumann ordinals. The rewriting rule of \texttt{eta omega x x'} states that in \texttt{omega} the edges represents the order relation $<$ and that there is an edge from every natural number to the root of \texttt{omega}.
+The pointed graph \texttt{omega} represents the set of Von Neumann ordinals \cite[see Table 2]{zermodulo}. Indeed, the rewriting rule of \texttt{eta omega x x'} states that in \texttt{omega} the edges correspond to the order relation $<$ and that there is an edge from every natural number to the root of \texttt{omega}. Therefore, the elements of \texttt{omega} are the natural numbers, and the elements of some natural number are all the natural numbers stricly below it, which corresponds to the definition of Von Neumann ordinals.
 
 
 \section{The Language of Formulas}
