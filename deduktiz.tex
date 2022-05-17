@@ -150,7 +150,7 @@ The set theory with pointed graphs developed by Dowek and Miquel is called Intui
 
 \label{informal}
 
-In the IZmod theory, sets are represented by pointed graphs, that is, direct graphs with a distinguished node: the root. We give here the representation of several sets as pointed graphs. The root is indicated by the filled circle. The location of the root is important as it changes the set represented by the pointed graph, distinct pointed graphs represent the same set. For example, in the third graph, the node $b$ is irrelevant since the root is $c$.
+In the IZmod theory, sets are represented by pointed graphs, that is, direct graphs with a distinguished node: the root. We give here the representation of several sets as pointed graphs. The root is indicated by the filled circle. The location of the root is important as it changes the set represented by the pointed graph. Distinct pointed graphs represent the same set. For example, in the third graph, the node $b$ is irrelevant since the root is $c$.
 
 \begin{figure}[h]
 \centering
@@ -212,7 +212,7 @@ As noted above, distinct pointed graphs can represent the same set. Two pointed 
 \begin{split}
 a \simeq b \lra~\ex r,~ &r~root(a)~root(b) \\
 &\conj \ \fa x \fa x'~\fa y~(x'~\eta_a~x~\conj~r~x~y~\imp~\ex y'~(y'~\eta_b~y~\conj~r~x'~y')) \\
-&\conj \ \fa y \fa y'~\fa x~(y'~\eta_b~y~\conj~r~x~y~\imp~\ex x'~(x'~\eta_a~x~\conj~r~x'~y')))
+&\conj \ \fa y \fa y'~\fa x~(y'~\eta_b~y~\conj~r~x~y~\imp~\ex x'~(x'~\eta_a~x~\conj~r~x'~y'))
 \end{split}
 \end{equation*}
 
@@ -317,7 +317,7 @@ constant symbol node : Set;
 \end{lstlisting}
 We also introduce a constant $\arr $ of type $\Set \ra \Set \ra \Set$, together with its associated rewrite rule $\El~(x~\arr~y) \lra (\El~x) \ra (\El~y)$.
 
-Contrary to deduction modulo, classes of nodes and binary relations on nodes can be expressed primitively via quantifications on propositions in \lpcm. The sort of classes is defined in \dedukti ~as $\El~node \ra \El~prop$ and that of binary relations as $\El~node \ra \El~node \ra \El~prop$.
+Contrary to \textit{Deduction modulo}, classes of nodes and binary relations on nodes can be expressed primitively via quantifications on propositions in \lpcm. The sort of classes is defined in \dedukti ~as $\El~node \ra \El~prop$ and that of binary relations as $\El~node \ra \El~node \ra \El~prop$.
 
 The symbols $graph$ and $node$ are specific to the expression of IZmod in \dedukti, while in contrast the symbols $\Set$, $\El$ and $prop$ are part of the standard library of \dedukti.
 
@@ -566,7 +566,7 @@ We can finally prove that $interpretation$ is invariant under $\simeq$-equivalen
 $\fa f \fa \sigma \fa \sigma' ~((interpretation \ \sigma \ f \ \conj \ \fa x ~(\sigma \ x \ \simeq \ \sigma' \ x)) \ \imp \ interpretation \ \sigma' \ f)$
 \end{theorem}
 \begin{proof}
-By induction over formula f. $\square$
+By induction over formula $f$. $\square$
 \end{proof}
 
 \subsection{Comprehension, Empty Set and Inductive Set}
@@ -758,7 +758,7 @@ To define and prove the lemmas corresponding to the Comprehension axiom, we have
 
 Historically, the encoding of sets by pointed graphs had been designed to enjoy the normalization property. IZmod expressed in \textit{Deduction modulo theory} does so, but the case of our implementation in \lpcm ~remains to be investigated.
 
-The implementation of IZmod theory represents a significant corpus of formal proofs in \textsc{Lambdapi}.
+The implementation of IZmod theory represents the first significant corpus of formal proofs in \textsc{Lambdapi}.
 
 \newpage
 \section*{Annex}
