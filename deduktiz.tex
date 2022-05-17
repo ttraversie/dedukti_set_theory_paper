@@ -604,20 +604,16 @@ rule Ind $c ↪ (empty_set ∈ $c)
 
 \section{Lemmas}
 
-A first result on the original formulation of the theory was to prove that the axioms of IZst are theorems in IZmod. This required 53 lemmas that were \textit{informally} proved in \cite[see Tables 4 and 5]{zermodulo} and that we prove \textit{formally} in this paper.
+Dowek and Miquel proved that the theory IZmod of pointed graph does validate all the axioms of IZst. This required 53 lemmas that were \textit{informally} proved~\cite[see Tables 4 and 5]{zermodulo} and that we prove \textit{formally} in our implementation. Some of our proofs just follow the informal ones, while some others rely on the type of formulas and its embedding into propositions. 
 
-Some of these proofs just follow the informal ones. Some others require the use of the type of formula and its embedding into propositions. 
-
-The first lemma $x=x$ does not need to be implemented since it is already part of the standard library of \dedukti \ under the name \texttt{refl} (which is polymorphic).
-
-The second lemma is already a consequence of the rewriting rule of the polymorphic $=$ implemented in the standard library of \dedukti: 
+The first two lemmas are immediate consequences of the definition of Leibniz equality in the standard library of \dedukti:
 \begin{lstlisting}
 constant symbol = [s] : El s → El s → El prop;
 notation = infix 4;
 rule π (@= $s $x $y) ↪ Π (P : El $s → El prop), π(P $x) → π(P $y);
 \end{lstlisting}
 
-All the other lemmas of IZmod except the ones where $comp$ is involved are proved using the blueprint in \cite[see Proposition 1]{zermodulo53}. The complete proofs can be found in \url{https://github.com/Deducteam/dedukti_set_theory/}.
+All the other lemmas of IZmod not involving $comp$ (and therefore restricted formulas) are proved using the blueprint~\cite[see Proposition 1]{zermodulo53}. The complete proofs can be found in \url{https://github.com/Deducteam/dedukti_set_theory/}.
 
 \subsection{An Example of Proof}
 
@@ -626,13 +622,13 @@ To show the way lemmas are proved in \dedukti ~we will take the example of lemma
 \begin{proof}
 We first assume graphs $a$, $b$ and $c$ and $H$ the proof of $ a \in b \conj a \simeq c $. $a \in b$ rewrites to $\ex x~(x~\eta_b~root~b \conj a \simeq (b/x))$. 
 
-We make appear $x$ and $Hx$ the proof $x~\eta_b~root~b \conj a \simeq (b/x)$. 
+We decompose the left part of $H$ as $x$ and $Hx$ which is a proof of $x~\eta_b~root~b \conj a \simeq (b/x)$. 
 
-As the goal is to prove $c \in b$, that is to say $\ex y~(y~\eta_b~root~b \conj c \simeq (b/y))$, we need to find a suitable $y$. We take $x$ and now have two goals: $y~\eta_b~root~b$ and $c \simeq (b/y)$. 
+As the goal is to prove $c \in b$, that is, $\ex y~(y~\eta_b~root~b \conj c \simeq (b/y))$, we need to find a suitable $y$. We take $x$ and now have two goals: $x~\eta_b~root~b$ and $c \simeq (b/x)$. 
 
 The first one is proved by applying the left part of $Hx$. 
 
-The second one is obtained by applying lemma 5 to $c$, $a$ and $b/x$. To apply lemma 5, we need to prove $c \simeq a \imp a \simeq b/x$. $c \simeq a$ is proved applying reflexivity to $a \simeq c$ (i.e. applying lemma 4 to $a$, $c$ and the right part of $H$). $a \simeq b/x$ derives from the right part of $Hx$. $\square$
+The second one is obtained by applying lemma 5 (transitivity of $\simeq$) to $c$, $a$ and $b/x$. To apply lemma 5, we need to prove $c \simeq a \conj a \simeq b/x$. $c \simeq a$ is proved by applying lemma 4 (symmetry of $\simeq$) to $a$, $c$ and the right part of $H$ that is a proof of $a \simeq c$. $a \simeq b/x$ derives from the right part of $Hx$. $\square$
 \end{proof}
 
 This proof is written in \dedukti ~with the following code: 
@@ -654,11 +650,11 @@ end;
 
 \subsection{Lemmas involving Formulas}
 
-Now that the language of formulas have been designed along with the implementation of the $comp$ symbol, lemma 32 can be implemented.
+Lemma 32 is as follows:
 
 $$(P(z \leftarrow a) \conj a \simeq b) \imp P(z \leftarrow b)$$
 
-We implement it thanks to the $interpretation$ symbol. The valuation $update~\sigma~z~a$ represents the assignment of variable $z \leftarrow a$.
+where $P$ is a restricted formula. Therefore, we formulate lemma 32 using the type of formulas, as well as its interpretation in $prop$. The valuation $update~\sigma~z~a$ represents the assignment of variable $z \leftarrow a$.
 
 \begin{lstlisting}
 opaque symbol lemma32 : Π (z : El nat), Π (f : El formula), 
@@ -667,7 +663,7 @@ opaque symbol lemma32 : Π (z : El nat), Π (f : El formula),
 	⇒ (interpretation (update σ z b) f)))
 \end{lstlisting}
 
-The proof of this \texttt{opaque symbol} is done by induction over formulas: each case is proved easily, using the lemmas that have already been checked by \dedukti. \\
+The proof proceeds by induction over formulas: each case is proved easily, using the lemmas that have already been checked by \dedukti. \\
 
 Lemma 41 is implemented similarly:
 
@@ -692,23 +688,23 @@ opaque symbol lemma41 : Π (x y : El nat), Π (f : El formula),
 
 \label{extensionality}
 
-We notice in \cite{zermodulo53} the use of weak extensionality (simply called extensionality) to prove lemmas 44, 47 and 48. We want to deduce weak extensionality from strong extensionality (i.e. lemma 41). \\
+The proofs of lemmas 44, 47 and 48 require the use of the axiom of (weak) extensionality~\cite{zermodulo53}. Therefore, we prove in \dedukti ~that extensionality is a consequence of strong extensionality (lemma 41):\\
 
 \textbf{Weak extensionality.} $\fa c\fa d~ (\fa z~ (z \in c \Leftrightarrow z \in d) \imp c \simeq d)$ \\
 
-We follow the blueprint given by G. Dowek and A. Miquel \cite[see Proposition 1]{zermodulo} : we use the strong extensionality axiom where $R(x,y)$ is $(x \simeq c~\conj~y \simeq d)~\disj~x \simeq y$. \\
 
 \begin{proof}
-We want to prove that $\fa c\fa d~(\fa z~ (z \in c \Leftrightarrow z \in d) \imp c \simeq d)$. We assume that $\fa z~ (z \in c \Leftrightarrow z \in d)$. We want to apply strong extensionality to deduce $c \simeq d$. To do so, we need to prove the three terms of the hypothesis of strong extensionality.
-
-$(c \simeq c~\conj~d \simeq d)~\disj~c \simeq d$ is a tautology.
-
-We want to prove that $\fa a\fa a'\fa b~(a' \in a~\conj~((a \simeq c~\conj~b \simeq d)~\disj~a \simeq b) \imp (\ex b'~ (b' \in b~\conj~((a' \simeq c~\conj~b' \simeq d)~\disj~a' \simeq b'))$. We assume $(a' \in a~\conj~((a \simeq c~\conj~b \simeq d)~\disj~a \simeq b)$. If $(a \simeq c~\conj~b \simeq d)$, then we choose $b' \simeq a'$. We have $b' \in a$ because $a' \in a$. Yet, $a \simeq c$, $c \simeq d$ and $d \simeq b$. Then $b' \in b$. If $a \simeq b$, we choose $b' \simeq a'$. We have $b' \in a$ because $a' \in a$. Yet, $a \simeq b$. Thus $b' \in b$.
-
-We proceed similarly for the third term. $\square$
+We assume that $\fa z~ (z \in c \Leftrightarrow z \in d)$. In order to prove $c \simeq d$, we follow the blueprint given by Dowek and Miquel~\cite[see Proposition 1]{zermodulo} by using an instance of the strong extensionality axiom where $R(x,y)$ is $(x \simeq c~\conj~y \simeq d)~\disj~x \simeq y$. We are left to prove the three premises of this instance of strong extensionality:
+\begin{itemize}
+\item $(c \simeq c~\conj~d \simeq d)~\disj~c \simeq d$ is a tautology.
+\item We need to prove:
+$$\fa a\fa a'\fa b~(a' \in a~\conj~((a \simeq c~\conj~b \simeq d)~\disj~a \simeq b) \imp (\ex b'~ (b' \in b~\conj~((a' \simeq c~\conj~b' \simeq d)~\disj~a' \simeq b'))$$
+We assume $(a' \in a~\conj~((a \simeq c~\conj~b \simeq d)~\disj~a \simeq b)$ and we choose $b'$ equal to $a'$, so that $(a' \simeq c~\conj~a' \simeq d)~\disj~a' \simeq a'$ is a tautology and we are left to prove $a' \in b$. If $a \simeq b$, then by lemma 31 this is a consequence of $a' \in a$. Otherwise we have $a \simeq c~\conj~b \simeq d$ so with lemma 31 applied twice we are left to prove $a' \in c \imp a' \in d$, which is a consequence of $\fa z~ (z \in c \Leftrightarrow z \in d)$.
+\item We proceed similarly for the third premise. $\square$
+\end{itemize}
 \end{proof}
 
-We implement this theorem in \dedukti:
+In order to implement this result in \dedukti ~we first prove the following intermediary lemma:
 
 \begin{lstlisting}
 opaque symbol lemmaHypExt : Π (c d : Graph), 
@@ -724,17 +720,17 @@ opaque symbol lemmaHypExt : Π (c d : Graph),
 	 	∧ (((a' simeq c) ∧ (b' simeq d)) ∨ (a' simeq b')))))))
 \end{lstlisting}
 
-To prove $weak \ extensionality$, we assume graphs $c$ and $d$, and $H$ the hypothesis $\fa z~ (z \in c) \Leftrightarrow (z \in d)$. Then we apply lemma 41 to:
+Then in order to prove $weak \ extensionality$, we assume graphs $c$ and $d$, and $H$ the hypothesis $\fa z~ (z \in c) \Leftrightarrow (z \in d)$. Then we apply lemma 41 to:
 
 \begin{itemize}
 \item natural numbers $zero$ and $one$
 \item the formula $(orF~(andF~(eqF~zero~two)~(eqF~one~three))~(eqF~zero~one))$
 \item graphs $c$ and $d$
 \item the valuation $(update~(update~(\lambda \_, empty\_set)~two~c)~three~d)$ 
-\item the proof of the left hand term $lemmaHypExt~c~d~H$.
+\item the proof $lemmaHypExt~c~d~H$.
 \end{itemize}
 
-Indeed, in the formula $$(orF~(andF~(eqF~zero~two)~(eqF~one~three))~(eqF~zero~one))$$ $zero$ and $one$ will be interpreted by $c$ and $d$ thanks to lemma 41 and $two$ will be interpreted by $c$ and $three$ by $d$ thanks the valuation $$(update~(update~(\lambda \_, empty\_set)~two~c)~three~d)$$ The proposition obtained corresponds to the proposition in lemmaHypExt.
+Indeed, in the formula $(orF~(andF~(eqF~zero~two)~(eqF~one~three))~(eqF~zero~one))$, $two$ will be interpreted by $c$ and $three$ by $d$, thanks the valuation $(update~(update~(\lambda \_, empty\_set)~two~c)~three~d)$. Finally we obtain:
 
 
 \begin{lstlisting}
