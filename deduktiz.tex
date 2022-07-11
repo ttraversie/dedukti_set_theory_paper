@@ -123,7 +123,7 @@ Thomas Traversié
 \maketitle
 
 \begin{abstract}
-\dedukti ~is a type-checker for the \lpcm, a logical framework that allows the extension of conversion with user-defined rewrite rules. In this paper, we present the implementation of a version of Dowek-Miquel's intuitionistic set theory in \dedukti. To do so, we adapt this theory -- based on the concept of pointed graphs -- from \textit{Deduction modulo theory} to \lpcm, and we \textit{formally} write the proofs in \dedukti. In particular, this implementation requires the definition of a deep embedding of a certain class of formulas, as well as its interpretation in the theory.
+\dedukti ~is a type-checker for the \lpcm, a logical framework that allows the extension of conversion with user-defined rewrite rules. In this paper, we present the implementation of a version of Dowek-Miquel's intuitionistic set theory in \dedukti. To do so, we adapt this theory --- based on the concept of pointed graphs --- from \textit{Deduction modulo theory} to \lpcm, and we \textit{formally} write the proofs in \dedukti. In particular, this implementation requires the definition of a deep embedding of a certain class of formulas, as well as its interpretation in the theory.
 \end{abstract}
 
 \section{Introduction}
@@ -150,7 +150,7 @@ The set theory with pointed graphs developed by Dowek and Miquel is called Intui
 
 \label{informal}
 
-In the IZmod theory, sets are represented by pointed graphs, that is, directed graphs with a distinguished node: the root. We give here the representation of several sets as pointed graphs. The root is indicated by the filled circle. The location of the root is important as it changes the set represented by the pointed graph. Distinct pointed graphs represent the same set. For example, in the third graph, the node $b$ is irrelevant since the root is $c$.
+In the IZmod theory, sets are represented by pointed graphs, that is, directed graphs with a distinguished node: the root. We give here the representation of several sets as pointed graphs. The root is indicated by the filled circle. The location of the root is important as it changes the set represented by the pointed graph. For example, in the third graph, the node $b$ is irrelevant since the root is $c$. Distinct pointed graphs can represent the same set. 
 
 \begin{figure}[h]
 \centering
@@ -201,9 +201,10 @@ In the IZmod theory, sets are represented by pointed graphs, that is, directed g
 \draw[->] (f3) -- (g3);
 
 \end{tikzpicture}
+\caption{Different representations of sets with pointed graphs, especially of ordinals $0 = \emptyset$, $1=\{\emptyset\}$ and $2=\{\emptyset,\{\emptyset\}\}$.}
 \end{figure}
 
-IZmod has a sort of pointed graphs and a sort of nodes. If $a$ is a pointed graph, $root(a)$ is the root of $a$, which is a node. If $x$ is a node of $a$, then $a/x$ denotes the pointed graph $a$ where the root has been replaced with $x$. If $y$ is also a node of $a$, $x~\eta_a~y$ is the proposition asserting that there is a edge in $a$ from $y$ to $x$. Following this interpretation, IZmod contains the following rewriting rules:
+IZmod has a sort of pointed graphs and a sort of nodes. If $a$ is a pointed graph, $root(a)$ is the root of $a$, which is a node. If $x$ is a node of $a$, then $a/x$ refers to the pointed graph $a$ where $x$ is the new root (this is a re-rooting operation). If $y$ is also a node of $a$, $x~\eta_a~y$ is the proposition asserting that there is a edge in $a$ from $y$ to $x$. Following this interpretation, IZmod contains the following rewriting rules:
 $$ x \ \eta_{a/z} \ y \longrightarrow x \ \eta_a \ y \qquad\qquad root(a/x) \longrightarrow x \qquad\qquad (a/x)/y \longrightarrow a/y $$
 
 As noted above, distinct pointed graphs can represent the same set. Two pointed graphs representing the same set are related through a notion of bisimilarity, denoted $\simeq$, and defined with the rewrite rule:
@@ -238,7 +239,7 @@ As an example, the following pointed graphs are bisimilar, hence they represent 
 \end{tikzpicture}
 \end{figure}
 
-In set theory, there only exists one sort: the sets. The IZmod theory has two sorts: nodes and pointed graphs, and two notions related to set membership: relations between pointed graphs and relations between nodes within the same graph. As an example, take $\emptyset \in \{\emptyset\}$:
+In set theory, there only exists one sort: the sets. The IZmod theory has two main sorts --- nodes and pointed graphs --- and two notions related to set membership --- relations between pointed graphs and relations between nodes within the same graph. As an example, take $\emptyset \in \{\emptyset\}$:
 
 \begin{figure}[h]
 \centering
@@ -289,7 +290,7 @@ The Transitive Closure axiom conveys the idea that every set is included in a tr
 
 Strong Extensionality can be deduced from Foundation and Transitive Closure can be derived from Replacement. Moreover, Strong Extensionality implies Extensionality\footnote{See Section \ref{extensionality}}. Therefore we have the following picture:
 
-%The IZmod theory is an extension of IZst set theory with an encoding of pointed graphs.
+The IZmod theory is an extension of IZst set theory with an encoding of pointed graphs, as the axioms of IZst are provable in IZmod\cite[see Section 3.3]{zermodulo}.
 
 
 \begin{center}
@@ -534,9 +535,9 @@ We can prove that $update$ and $update1$ satisfy the intended properties:
 \begin{theorem}
 \begin{equation*}
 \begin{split}
-\fa \sigma \fa x \fa y \fa z \fa a ~((x = y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ = \ a) \ \conj \ (\blneg \ x = y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ = \ \sigma \ z))
+& (i) \ \fa \sigma \fa x \fa y \fa z \fa a ~((x = y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ = \ a) \ \conj \ (\blneg \ x = y \ \imp \ update1 \ \sigma \ x \ a \ y \ z \ = \ \sigma \ z))
 \\
-\fa \sigma \fa \sigma' \fa x \fa a \fa b~ (a \ \simeq \ b \ \imp \ (\fa y~ (\sigma \ y \ \simeq \ \sigma' \ y)) \ \imp \ \fa z~ (update \ \sigma \ x \ a \ z \ \simeq \ update \ \sigma' \ x \ b \ z))
+& (ii) \ \fa \sigma \fa \sigma' \fa x \fa a \fa b~ (a \ \simeq \ b \ \imp \ (\fa y~ (\sigma \ y \ \simeq \ \sigma' \ y)) \ \imp \ \fa z~ (update \ \sigma \ x \ a \ z \ \simeq \ update \ \sigma' \ x \ b \ z))
 \end{split}
 \end{equation*}
 \end{theorem}
@@ -588,19 +589,19 @@ rule eta (comp $a $σ $f) $x $x' ↪
 rule root (comp $a $σ $f) ↪ o;
 \end{lstlisting}
 
-When it comes to the symbol related to the Infinity section of \cite[see Section 2.1]{zermodulo}, we implement $empty\_set$ of type $\El~graph$ and $Ind$ of type $\El~graph \ \ra \ \El~prop$.
-
-Using comprehension with the set of natural numbers and the formula $fF$ gives the empty set:
+Moreover, we are now able to define two symbols related to the lemmas of the Infinity section \cite[see Table 5]{zermodulo}: the empty set and inductive sets $Ind$ \cite[see Section 2.1]{zermodulo}. We implement $empty\_set$ of type $\El~graph$ and $Ind$ of type $\El~graph \ \ra \ \El~prop$. We use comprehension with the set of natural numbers and the formula $fF$ to define the rewrite rule of the empty set:
 \begin{lstlisting}
 rule empty_set ↪ comp omega (λ _, omega) fF;
 \end{lstlisting}
 
-and we can define inductive sets:
+We can now define inductive sets:
 
 \begin{lstlisting}
 rule Ind $c ↪ (empty_set ∈ $c) 
-∧ (`∀ a, (a ∈ $c) ⇒ ((join (pair a (pair a a))) ∈ $c));
+	∧ (`∀ a, (a ∈ $c) ⇒ ((join (pair a (pair a a))) ∈ $c));
 \end{lstlisting}
+
+Inductive sets are used in the axiom of infinity. The previous rule states that $c$ is inductive if (i) it contains the empty set and (ii) if $a \in c$ then $a \cup \{a\} \in c$. Here we use \texttt{pair a a} to form the singleton $\{a\}$.
 
 \section{Lemmas}
 
@@ -696,7 +697,7 @@ The proofs of lemmas 44, 47 and 48 require the use of the axiom of (weak) extens
 \begin{proof}
 We assume that $\fa z~ (z \in c \Leftrightarrow z \in d)$. In order to prove $c \simeq d$, we follow the blueprint given by Dowek and Miquel~\cite[see Proposition 1]{zermodulo} by using an instance of the strong extensionality axiom where $R(x,y)$ is $(x \simeq c~\conj~y \simeq d)~\disj~x \simeq y$. We are left to prove the three premises of this instance of strong extensionality:
 \begin{itemize}
-\item $(c \simeq c~\conj~d \simeq d)~\disj~c \simeq d$ is a tautology.
+\item $(c \simeq c~\conj~d \simeq d)~\disj~c \simeq d$ derives from the reflexivity of bisimilarity (lemma 3).
 \item We need to prove:
 $$\fa a\fa a'\fa b~(a' \in a~\conj~((a \simeq c~\conj~b \simeq d)~\disj~a \simeq b) \imp (\ex b'~ (b' \in b~\conj~((a' \simeq c~\conj~b' \simeq d)~\disj~a' \simeq b'))$$
 We assume $(a' \in a~\conj~((a \simeq c~\conj~b \simeq d)~\disj~a \simeq b)$ and we choose $b'$ equal to $a'$, so that $(a' \simeq c~\conj~a' \simeq d)~\disj~a' \simeq a'$ is a tautology and we are left to prove $a' \in b$. If $a \simeq b$, then by lemma 31 this is a consequence of $a' \in a$. Otherwise we have $a \simeq c~\conj~b \simeq d$ so with lemma 31 applied twice we are left to prove $a' \in c \imp a' \in d$, which is a consequence of $\fa z~ (z \in c \Leftrightarrow z \in d)$.
@@ -752,7 +753,7 @@ We have now encoded in \dedukti ~all the axioms of IZst set theory: the strong e
 
 \section{Conclusion}
 
-We have implemented in \dedukti ~a version of set theory -- IZst -- that corresponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded sets with a structure of pointed graphs of the IZmod theory. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
+We have implemented in \dedukti ~a version of set theory --- IZst --- that corresponds to Zermelo set theory, with the Strong Extensionality axiom and the Transitive Closure axiom. To do so, we have adapted the work by G. Dowek and A. Miquel \cite{zermodulo} from \textit{Deduction modulo theory} to \lpcm ~and have encoded sets with a structure of pointed graphs of the IZmod theory. We have \textit{formally} written all the proofs of the lemmas allowing us to implement set theory in \dedukti.
 
 To define and prove the lemmas corresponding to the Comprehension axiom, we have developed a language of formulas, along with operators \textit{interpretation} and \textit{update}. In particular, the language of formulas allows us to prove that the Extensionality axiom derives from the Strong Extensionality axiom.
 
